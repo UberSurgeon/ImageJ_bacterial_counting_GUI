@@ -1,0 +1,16 @@
+{
+    "folder-color.pathColors": [
+        {
+            "folderPath": "gui\\tab1.py\\",
+            "color": "foldercolorizer.color_33ccff"
+        },
+        {
+            "folderPath": "gui\\tab2.py\\",
+            "color": "foldercolorizer.color_33ccff"
+        },
+        {
+            "folderPath": "gui\\test.py\\",
+            "color": "foldercolorizer.color_33ccff"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "fiji_dir": "C:/Users/NotEW/Desktop/Fiji",
+    "preset": {
+        "test tube": {
+            "addlightness": 90,
+            "prominence": 65
+        },
+        "bottle": {
+            "addlightness": 105,
+            "prominence": 90
+        },
+        "test tube in prototype": {
+            "addlightness": 105,
+            "prominence": 90
+        },
+        "custom": {
+            "addlightness": 0,
+            "prominence": 0
+        }
+    },
+    "env": "test tube",
+    "JAVA_HOME": "C:/Program Files/Java/jdk-21"
+}
