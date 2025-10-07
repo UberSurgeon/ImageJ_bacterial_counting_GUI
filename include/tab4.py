@@ -10,7 +10,7 @@ class Tab4(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        tk.Button(self, text='Select output dir', command=self.create_window).pack()
+        tk.Button(self, text='How to use', command=self.create_window).pack()
         
         # add credits and contact if encounter anybugs
         tk.Button(self, text='Contact for support', command=self.create_window).pack()

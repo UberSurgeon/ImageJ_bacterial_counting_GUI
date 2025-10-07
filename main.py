@@ -1,3 +1,17 @@
+import importlib.metadata
+import sys
+
+# --- Save original function before overwriting it ---
+_original_version = importlib.metadata.version
+
+def safe_version(name, default="1.0.0"):
+    try:
+        return _original_version(name)
+    except importlib.metadata.PackageNotFoundError:
+        return default
+
+# --- Override the version function globally ---
+sys.modules["importlib.metadata"].version = safe_version
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
@@ -11,8 +25,8 @@ from include.tab4 import Tab4
 from include.ijClass import ImageJ
 import json
 import tempfile
-import threading
-import sys
+
+
 
 
 class windows(tk.Tk):
@@ -20,10 +34,10 @@ class windows(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.started = False
         
-        try:
-            threading.Thread(target=self.pop).start()
-        except Exception:
-            print('loading done')
+        # try:
+        #     threading.Thread(target=self.pop).start()
+        # except Exception:
+        #     print('loading done')
         
         try:
             # get setting
@@ -36,6 +50,12 @@ class windows(tk.Tk):
             self.imageJ = ImageJ(self.setting["fiji_dir"], mode='interactive')
         except Exception as e:
             self.error_msg(title='Init error', msg=f'somthing wrong with setting or, the fiji dir is wrong ({e})')
+            
+        # img_list = [r'C:\Users\NotEW\Documents\Code\roboai\gui\bac.png']
+        # imageJ.test(img_list, setting, r'C:\Users\NotEW\Documents\Code\roboai\gui\waa', r'C:\Users\NotEW\Documents\Code\roboai\gui\waa')
+        
+        # self.imageJ.laskePesakeLuvut(img_list, self.setting, r'C:\Users\NotEW\Documents\Code\roboai\gui\waa', r'C:\Users\NotEW\Documents\Code\roboai\gui\waa')
+        # self.imageJ.exit()
             
         try:
             self.iconbitmap(self.img_path('logo.ico'))
@@ -56,6 +76,7 @@ class windows(tk.Tk):
         menubar.add_cascade(label='save', command=self.save)
         menubar.add_cascade(label='open', command=self.open)
         menubar.add_cascade(label='fiji directory', command=self.update_fijiDir)
+        menubar.add_cascade(label='JAVA_HOME', command=self.update_JAVA_HOME)
         
         #init temp file
         self.temp_dir = tempfile.mkdtemp(prefix="temp_")
@@ -78,7 +99,7 @@ class windows(tk.Tk):
 
         self.notebook = ttk.Notebook(self)
         
-        self.tab2 = Tab2(self.notebook, imageJ=self.imageJ, setting=self.setting, temp_dir=self.temp_dir)
+        self.tab2 = Tab2(self.notebook, imageJ=self.imageJ, setting=self.setting, settingPath=self.setting_path(), temp_dir=self.temp_dir)
         self.tab1 = Tab1(self.notebook, save_Dir=self.save_Dir, tab2=self.tab2, temp_dir=self.temp_dir)
         self.tab3 = Tab3(self.notebook)
         self.tab4 = Tab4(self.notebook)
@@ -134,9 +155,16 @@ class windows(tk.Tk):
             messagebox.showinfo('Information', 'project already been open/ created')
     
     def update_fijiDir(self):
-        path = filedialog.askdirectory(title='Select the project Directory', initialdir=self.setting["fiji_dir"])
+        path = filedialog.askdirectory(title='Select the fiji installation Directory')
         if path != '':
             self.setting["fiji_dir"] = path
+            # print('fiji folder updated')
+            self.update_setting()
+    
+    def update_JAVA_HOME(self):
+        path = filedialog.askdirectory(title='Select the JAVA_HOME Directory')
+        if path != '':
+            self.setting["JAVA_HOME"] = path
             # print('fiji folder updated')
             self.update_setting()
 
@@ -182,8 +210,8 @@ class windows(tk.Tk):
 
         
 def main():
-    testObj = windows()
-    testObj.mainloop()
+    app = windows()
+    app.mainloop()
 
 
 if __name__ == "__main__":

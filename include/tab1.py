@@ -53,8 +53,7 @@ class Tab1(tk.Frame):
             # dst = os.path.join(self.save_Dir, 'raw')
             try:
                 self.img_list = []
-                path = os.path.dirname(__file__)
-                dst = self.getDst(path=path, dst='raw')
+                dst = self.getDst(dst='raw')
                 for filename in os.listdir(dst):
                     path = os.path.normpath(os.path.join(dst, filename))
                     self.img_list.append(path)
@@ -64,8 +63,7 @@ class Tab1(tk.Frame):
                 self.error_msg(title='updateImgae', msg=f'error in updateImage {e}')
 
     def openFile(self):
-        path = os.path.dirname(__file__)
-        dst = self.getDst(path=path, dst='raw')
+        dst = self.getDst(dst='raw')
         # if self.save_Dir != None:
         #     dst = os.path.join(self.save_Dir, 'raw')
         #     # filepath = os.listdir(dst)
@@ -106,8 +104,6 @@ class Tab1(tk.Frame):
                 self.displayImage()
                 self.tab2.img_index = self.img_index
                 self.tab2.displayImage()
-            else:
-                print('四不像等一下诶嗯啊！')
         else:
             self.error_msg('delImage', 'Image dont exist')
 
@@ -182,15 +178,12 @@ class Tab1(tk.Frame):
         if self.save_Dir is not None:
             self.updateImage()
     
-    def getDst(self, path, dst: Literal['raw']):
+    def getDst(self, dst: Literal['raw']):
         if self.save_Dir is None:
             if dst == 'raw':
-                # print(os.path.normpath(os.path.join(path, 'temp', 'raw')))
                 return os.path.normpath(os.path.join(self.temp_dir, 'raw'))
         elif self.save_Dir is not None:
             if dst == 'raw':
-                # print('here')
-                # print(os.path.join(self.save_Dir, 'raw'))
                 return os.path.normpath(os.path.join(self.save_Dir, 'raw'))
     
     def error_msg(self, title, msg):

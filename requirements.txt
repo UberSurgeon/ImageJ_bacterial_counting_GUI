@@ -1,0 +1,12 @@
+tk
+tkinterweb
+ttkbootstrap
+pillow
+imageio
+pandas
+numpy
+imagej
+scyjava
+markdown
+pyimagej
+pyinstaller

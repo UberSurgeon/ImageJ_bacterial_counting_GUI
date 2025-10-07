@@ -10,13 +10,14 @@ import json
 
 
 class Tab2(tk.Frame):
-    def __init__(self, parent, imageJ: ImageJ, setting, temp_dir):
+    def __init__(self, parent, imageJ: ImageJ, setting, settingPath, temp_dir):
         super().__init__(parent)
         self.temp_dir = temp_dir
 
         self.save_Dir = None
 
         self.setting = setting
+        self.settingPath = settingPath
 
         self.imageJ = imageJ
         self.left_frame = tk.Frame(self, width=200, height=400)
@@ -49,7 +50,6 @@ class Tab2(tk.Frame):
         tk.Button(self.tool_bar,  text="raw", command=self.getRawImage, width=10).grid(row=2,  column=0,  padx=5,  pady=5,  sticky='w'+'e'+'n'+'s')
         tk.Button(self.tool_bar,  text="count", command=self.askReCount, width=8).grid(row=3,  column=0,  padx=5,  pady=5,  sticky='w'+'e'+'n'+'s')
         tk.Button(self.tool_bar,  text=":", width=2, command=self.countSetting).grid(row=3,  column=1,  padx=5,  pady=5,  sticky='w'+'e'+'n'+'s')
-        # tk.Button(self.tool_bar,  text="meta", command=self.getMetaData).grid(row=5,  column=0,  padx=5,  pady=5,  sticky='w'+'e'+'n'+'s')
 
 
         # meta data
@@ -89,8 +89,7 @@ class Tab2(tk.Frame):
         
     def getRawImage(self):
         try:
-            path = os.path.dirname(__file__)
-            dst = self.getDst(path=path, dst='raw')
+            dst = self.getDst(dst='raw')
             self.img_list = []
             # get raw
             for filename in os.listdir(dst):
@@ -108,9 +107,8 @@ class Tab2(tk.Frame):
         
 
     def askReCount(self):
-        path = os.path.dirname(__file__)
-        imgDir = self.getDst(path=path, dst='count')
-        dataDir = self.getDst(path=path, dst='data')
+        imgDir = self.getDst(dst='count')
+        dataDir = self.getDst(dst='data')
         # print(self.mode)
         if os.listdir(imgDir) != [] and os.listdir(dataDir) != []:
             result = messagebox.askyesnocancel(title='ReCount?', message='Do you want to recount(yes) or just display the counted image?(no)')
@@ -129,11 +127,10 @@ class Tab2(tk.Frame):
 
     def getCountImage(self):
         try:
-            # dst = os.path.join(os.path.dirname(__file__), 'temp', 'raw')
-            path = os.path.dirname(__file__)
-            dst = self.getDst(path=path, dst='raw')
-            imgDir = self.getDst(path=path, dst='count')
-            dataDir = self.getDst(path=path, dst='data')
+            dst = os.path.join(os.path.dirname(__file__), 'temp', 'raw')
+            dst = self.getDst(dst='raw')
+            imgDir = self.getDst(dst='count')
+            dataDir = self.getDst(dst='data')
             self.img_list = []
             for filename in os.listdir(dst):
                 path = os.path.normpath(os.path.join(dst, filename))
@@ -142,13 +139,13 @@ class Tab2(tk.Frame):
             if self.img_list:
                 results = self.imageJ.laskePesakeLuvut(img_list=self.img_list, setting=self.setting, imgDir=imgDir, dataDir=dataDir)
                 self.results = results
-                print(self.results)
+                # print(self.results)
                 self.createTable()
                 print('DONE COUNTING')
                 self.mode = 'count'
                 self.displayImage()
             else:
-                self.warning_msg('no image loaded', 'no image loaded to temp')
+                self.warning_msg('no image loaded', 'no image loaded')
         except Exception as e:
             self.error_msg(title='getCountImage', msg=f'error getCountImage {e}')
 
@@ -168,21 +165,14 @@ class Tab2(tk.Frame):
                         "Image is Animated": getattr(image, "is_animated", False),
                         "Frames in Image": getattr(image, "n_frames", 1)
                 }
-                print(info_dict)
+                # print(info_dict)
                 self.img_metadata.append(info_dict)
         except Exception as e:
             self.error_msg(title='getMetaData', msg=f'error getMetaData {e}')
 
     def displayImage(self):
-        # if not self.img_list:
-        #     self.img_canvas.delete(self.canvas_img_id)
-        #     self.canvas_img_id = None
-        #     self.init_text_id = self.img_canvas.create_text(100, 50, text="No Image Selected", fill="black", font=('Helvetica 15 bold'))
-        #     return None
-
         try:
-            path = os.path.dirname(__file__)
-            dst = self.getDst(path=path, dst=self.mode)
+            dst = self.getDst(dst=self.mode)
             self.img_list = []
             # get img from mode
             for filename in os.listdir(dst):
@@ -294,7 +284,7 @@ class Tab2(tk.Frame):
         if self.save_Dir is not None:
             self.updateImage()
             
-    def getDst(self, path, dst: Literal['raw', 'count', 'data']):
+    def getDst(self, dst: Literal['raw', 'count', 'data']):
         if self.save_Dir is None:
             if dst == 'raw':
                 x = os.path.join(self.temp_dir, 'raw')
@@ -317,7 +307,7 @@ class Tab2(tk.Frame):
         self.setting = setting
         
         try:
-            with open('gui/setting.json', 'w') as file:
+            with open(self.settingPath, 'w') as file:
                 json.dump(self.setting, file, indent=4)
         except Exception as e:
             self.error_msg(title='update_setting', msg=f'error update_setting {e}')
