@@ -7,17 +7,18 @@ from include.imageViewer import CanvasImage
 from include.ijClass import ImageJ
 from typing import Literal
 import json
+import include.utils as utils
 
 
 class Tab2(tk.Frame):
-    def __init__(self, parent, imageJ: ImageJ, setting, settingPath, temp_dir):
+    def __init__(self, parent, imageJ: ImageJ, setting, temp_dir):
         super().__init__(parent)
         self.temp_dir = temp_dir
 
         self.save_Dir = None
 
         self.setting = setting
-        self.settingPath = settingPath
+        self.settingPath = utils.settingPath()
 
         self.imageJ = imageJ
         self.left_frame = tk.Frame(self, width=200, height=400)
