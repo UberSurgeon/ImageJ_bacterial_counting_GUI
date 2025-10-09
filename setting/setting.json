@@ -14,8 +14,8 @@
             "prominence": 90
         },
         "custom": {
-            "addlightness": 0,
-            "prominence": 0
+            "addlightness": "12",
+            "prominence": "98"
         }
     },
     "env": "test tube",

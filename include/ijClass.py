@@ -13,14 +13,8 @@ import jpype
 class ImageJ():
     def __init__(self, dir, mode):
         self.ij = imagej.init(dir, mode)
-        print(self.ij.getVersion())
-        print(self.ij.getApp().getInfo(True))
-        
-        # os.environ['JAVA_HOME'] = r'C:\Program Files\Java\jdk-21'
-        # self.ij = imagej.init("C:/Users/NotEW/Desktop/Fiji", mode='interactive')
         # print(self.ij.getVersion())
         # print(self.ij.getApp().getInfo(True))
-
     
     def exit(self):
         print("Closing ImageJ...")
@@ -96,23 +90,40 @@ class ImageJ():
         count = rt.size()
 
         results = []
-        
+
+        # Prepare lists for CSV
+        filenames = []
+        counts = []
+
         for i in range(count):
-            x = rt.getValue("Count", i)
+            cnt = int(rt.getValue("Count", i))
+            img_name = img_list[i]  # same as ImageJ macro: "Filename"
+            
             result = {
                 'row': i + 1,
-                'count': int(x),
-                'img': img_list[i]
+                'count': cnt,
+                'img': img_name
             }
             results.append(result)
+            
+            filenames.append(img_name)
+            counts.append(cnt)
 
-        # self.ij.IJ.run("Close", "Results")
-
-        dst = os.path.join(dataDir, "data.json")
-        with open(dst, 'w', encoding='utf-8') as file:
+        # Save as JSON (same as before)
+        dst_json = os.path.join(dataDir, "data.json")
+        with open(dst_json, 'w', encoding='utf-8') as file:
             json.dump(results, file, ensure_ascii=False, indent=4)
-        
+
+        # Save as CSV (same format as ImageJ macro)
+        dst_csv = os.path.join(dataDir, "Kuvista_Lasketut_pesakeluvut.csv")
+        with open(dst_csv, 'w', encoding='utf-8', newline='') as file:
+            file.write("Filename,Count\n")
+            for name, cnt in zip(filenames, counts):
+                file.write(f"{name},{cnt}\n")
+
+        # Close Results table
         self.ij.IJ.run("Close", "Results")
+
         return results
     
     def test(self, img_list: list, setting: dict, imgDir: str, dataDir: str):
