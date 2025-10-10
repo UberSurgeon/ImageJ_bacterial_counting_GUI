@@ -9,7 +9,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s',
     filename='app.log',
-    filemode='a'
+    filemode='w'
 )
 
 def log_message(level: Literal['debug', 'info', 'warning', 'error', 'critical'], message):
@@ -74,10 +74,15 @@ def imgPath(name):
         return os.path.join(sys.path[0], 'img', name)
 
 def settingPath():
+    """Return the path to setting.json located next to the executable."""
     if getattr(sys, 'frozen', False):
-        return os.path.join(sys._MEIPASS, 'setting', 'setting.json')
+        # Running as PyInstaller EXE
+        base_path = os.path.dirname(sys.executable)
     else:
-        return os.path.join(sys.path[0], 'setting', 'setting.json')
+        # Running from source
+        base_path = sys.path[0]
+
+    return os.path.join(base_path, "setting", "setting.json")
     
 def set_icon(parent, ico_name='icon.ico'):
     import os

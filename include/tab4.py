@@ -31,7 +31,7 @@ class Tab4(tk.Frame):
             md_text = md_text = """
 # How to Use
 
-This guide explains the basic workflow and features of the Image Analysis App.
+This guide explains the basic workflow and features of the App.
 
 ---
 
@@ -53,12 +53,7 @@ This guide explains the basic workflow and features of the Image Analysis App.
 
 ## 2. Cropping
 
-If cropping functionality is available:
-1. Open the image you wish to crop.  
-2. Use the selection tool to define the area you want to keep.  
-3. Confirm to save the cropped version.
-
-This feature may be added or expanded in future updates.
+...
 
 ---
 
@@ -89,7 +84,7 @@ In **Tab 3 — Table Manager**, you can organize and export data into a structur
 1. Click **Select File** and choose the CSV file generated during the counting step.  
 2. Click **Select Output Dir** to choose where to save the arranged file.  
 3. Click **Arrange Table** to process and save the results.  
-4. The output file will be named `dataTable.csv` and stored in the selected directory.
+4. The output file will be named `Taulukko_Kuvista_Lasketuista_pesakeluvuista.csv` and stored in the selected directory.
 
 **Note:** The app automatically organizes data by sample type, extracted from filenames.
 

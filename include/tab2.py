@@ -281,6 +281,21 @@ class Tab2(tk.Frame):
         utils.log_message('debug', f"Updated save directory: {self.save_Dir}")
         if self.save_Dir is not None:
             self.updateImage()
+  
+    def update_temp_Dir(self, temp_dir):
+        """Update save directory and refresh images"""
+        self.temp_dir = temp_dir
+        utils.log_message('debug', f"Updated temp directory: {self.temp_dir}")
+        if self.temp_dir is not None:
+            self.updateImage()
+            self.img_list = []
+            self.results = []
+            self.createTable()
+            self.displayImage()
+            # empty meta
+            self.text_box.config(state='normal')
+            self.text_box.delete("1.0", tk.END)
+            self.text_box.config(state='disabled')
 
     def update_setting(self, setting):
         """Save new settings to file."""

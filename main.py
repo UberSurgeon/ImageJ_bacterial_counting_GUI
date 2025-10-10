@@ -69,7 +69,7 @@ class Prelaunch(tk.Toplevel):
         # Confirm launch section
         tk.Label(self, text="Proceed to main app?").pack(pady=10)
         tk.Button(self, text="Yes", command=lambda: self._confirm(on_confirm)).pack(side="left", padx=30)
-        tk.Button(self, text="No", command=self.destroy).pack(side="right", padx=30)
+        tk.Button(self, text="No", command=self._exit).pack(side="right", padx=30)
 
     def capture_checkup_output(self):
         # Perform ImageJ environment check and capture the output
@@ -110,6 +110,10 @@ class Prelaunch(tk.Toplevel):
         utils.log_message('info', "User confirmed to launch main window")
         self.destroy()
         on_confirm()
+    
+    def _exit(self):
+        self.destroy()
+        exit(0)
 
 
 class Windows(tk.Toplevel):
@@ -130,10 +134,11 @@ class Windows(tk.Toplevel):
         except Exception as e:
             utils.errorMsg(title='Init error', msg=f'fiji/JAVA_HOME dir is wrong ({e})')
             utils.log_message('error', f"Failed to initialize ImageJ: {e}")
+            self.window_exit()
 
         # Window setup
         self.wm_title('Untitled_Project')
-        self.wm_geometry('800x600')
+        self.wm_geometry('1200x800')
         self.protocol("WM_DELETE_WINDOW", self.window_exit)
 
         # Menu bar setup
@@ -141,15 +146,17 @@ class Windows(tk.Toplevel):
         self.config(menu=menubar)
 
         fileMenu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label='save', command=self.save)
+        menubar.add_cascade(label='save as', command=self.save)
         menubar.add_cascade(label='open', command=self.open)
+        menubar.add_cascade(label='new', command=self.new)
 
         # Create temporary directories
-        self.temp_dir = tempfile.mkdtemp(prefix="temp_")
-        os.makedirs(os.path.join(self.temp_dir, "raw"), exist_ok=True)
-        os.makedirs(os.path.join(self.temp_dir, "imageJ", "data"), exist_ok=True)
-        os.makedirs(os.path.join(self.temp_dir, "imageJ", "result"), exist_ok=True)
-        utils.log_message('debug', f"Temporary directories created at {self.temp_dir}")
+        self.setFolder()
+        # self.temp_dir = tempfile.mkdtemp(prefix="temp_")
+        # os.makedirs(os.path.join(self.temp_dir, "raw"), exist_ok=True)
+        # os.makedirs(os.path.join(self.temp_dir, "imageJ", "data"), exist_ok=True)
+        # os.makedirs(os.path.join(self.temp_dir, "imageJ", "result"), exist_ok=True)
+        # utils.log_message('debug', f"Temporary directories created at {self.temp_dir}")
 
         self.save_Dir = None
         self.project_Name = None
@@ -182,41 +189,59 @@ class Windows(tk.Toplevel):
                 utils.log_message('info', "Application closed and resources cleaned up")
             except Exception as e:
                 utils.log_message('error', f"Error during application exit: {e}")
+    
+    def setFolder(self):
+        self.temp_dir = tempfile.mkdtemp(prefix="temp_")
+        os.makedirs(os.path.join(self.temp_dir, "raw"), exist_ok=True)
+        os.makedirs(os.path.join(self.temp_dir, "imageJ", "data"), exist_ok=True)
+        os.makedirs(os.path.join(self.temp_dir, "imageJ", "result"), exist_ok=True)
+        utils.log_message('debug', f"Temporary directories created at {self.temp_dir}")
 
     def save(self):
         # Save project data
-        if self.save_Dir is None:
-            self.save_Dir = filedialog.askdirectory(title='Create a new project Directory')
-            if self.save_Dir == '':
-                self.save_Dir = None
-                return
-            shutil.copytree(self.temp_dir, self.save_Dir, dirs_exist_ok=True)
-            self.wm_title(self.save_Dir)
-            self.tab1.update_save_Dir(self.save_Dir)
-            self.tab2.update_save_Dir(self.save_Dir)
-            utils.log_message('info', f"Project saved to {self.save_Dir}")
-        else:
-            utils.infoMsg('Information', 'project already saved')
-            utils.log_message('warning', "Save attempted but project already saved")
+        # if self.save_Dir is None:
+        self.save_Dir = filedialog.askdirectory(title='Create a new project Directory')
+        if self.save_Dir == '':
+            self.save_Dir = None
+            return
+        shutil.copytree(self.temp_dir, self.save_Dir, dirs_exist_ok=True)
+        self.wm_title(self.save_Dir)
+        self.tab1.update_save_Dir(self.save_Dir)
+        self.tab2.update_save_Dir(self.save_Dir)
+        utils.log_message('info', f"Project saved to {self.save_Dir}")
+        # else:
+        #     utils.infoMsg('Information', 'project already saved')
+        #     utils.log_message('warning', "Save attempted but project already saved")
 
     def open(self):
         # Open existing project directory
         prv_save = self.save_Dir
-        if self.save_Dir is None:
-            self.save_Dir = filedialog.askdirectory(title='Select the project Directory')
-            if self.save_Dir == '' and prv_save is None:
-                self.save_Dir = None
-                utils.log_message('warning', "Open cancelled: No directory selected")
-                return
-            else:
-                self.wm_title(self.save_Dir)
-                self.tab1.update_save_Dir(self.save_Dir)
-                self.tab2.update_save_Dir(self.save_Dir)
-                utils.log_message('info', f"Opened project from {self.save_Dir}")
+        # if self.save_Dir is None:
+        self.save_Dir = filedialog.askdirectory(title='Select the project Directory')
+        if self.save_Dir == '' and prv_save is None:
+            self.save_Dir = None
+            utils.log_message('warning', "Open cancelled: No directory selected")
+            return
         else:
-            utils.infoMsg('Information', 'project already been open/ created')
-            utils.log_message('warning', "Open attempted but project already open")
-
+            self.wm_title(self.save_Dir)
+            self.tab1.update_save_Dir(self.save_Dir)
+            self.tab2.update_save_Dir(self.save_Dir)
+            utils.log_message('info', f"Opened project from {self.save_Dir}")
+        # else:
+        #     utils.infoMsg('Information', 'project already been open/ created')
+        #     utils.log_message('warning', "Open attempted but project already open")
+            
+    def new(self):
+        if messagebox.askokcancel(title='new', message='Do you want to start a new project?'):
+            shutil.rmtree(self.temp_dir, ignore_errors=True)
+            self.save_Dir = None
+            self.setFolder()
+            self.wm_title('Untitled_Project')
+            self.tab1.update_save_Dir(self.save_Dir)
+            self.tab2.update_save_Dir(self.save_Dir)
+            self.tab1.update_temp_Dir(self.temp_dir)
+            self.tab2.update_temp_Dir(self.temp_dir)
+            utils.log_message('info', "new empty project")
 
 def main():
     # Initialize base Tk root and launch Prelaunch first

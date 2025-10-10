@@ -1,1 +1,2 @@
-python -m PyInstaller --additional-hooks-dir=hooks --onefile -w --icon=img/icon.ico "main.py" --add-data "img;img" --add-data "setting;setting" --exclude PyQt5 --exclude PySide6 --exclude qtpy --log-level=DEBUG
+python -m PyInstaller --additional-hooks-dir=hooks --onefile -w --icon=img/icon.ico "main.py" --add-data "img;img" --exclude PyQt5 --exclude PySide6 --exclude qtpy --log-level=DEBUG --name=IJgui
+
