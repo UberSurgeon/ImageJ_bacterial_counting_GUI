@@ -1,0 +1,53 @@
+2025-10-15 14:15:07,005 - INFO - Starting application execution
+2025-10-15 14:15:07,513 - DEBUG - Importing BlpImagePlugin
+2025-10-15 14:15:07,515 - DEBUG - Importing BmpImagePlugin
+2025-10-15 14:15:07,515 - DEBUG - Importing BufrStubImagePlugin
+2025-10-15 14:15:07,517 - DEBUG - Importing CurImagePlugin
+2025-10-15 14:15:07,519 - DEBUG - Importing DcxImagePlugin
+2025-10-15 14:15:07,522 - DEBUG - Importing DdsImagePlugin
+2025-10-15 14:15:07,527 - DEBUG - Importing EpsImagePlugin
+2025-10-15 14:15:07,529 - DEBUG - Importing FitsImagePlugin
+2025-10-15 14:15:07,531 - DEBUG - Importing FliImagePlugin
+2025-10-15 14:15:07,532 - DEBUG - Importing FpxImagePlugin
+2025-10-15 14:15:07,536 - DEBUG - Importing FtexImagePlugin
+2025-10-15 14:15:07,537 - DEBUG - Importing GbrImagePlugin
+2025-10-15 14:15:07,539 - DEBUG - Importing GifImagePlugin
+2025-10-15 14:15:07,539 - DEBUG - Importing GribStubImagePlugin
+2025-10-15 14:15:07,540 - DEBUG - Importing Hdf5StubImagePlugin
+2025-10-15 14:15:07,542 - DEBUG - Importing IcnsImagePlugin
+2025-10-15 14:15:07,547 - DEBUG - Importing IcoImagePlugin
+2025-10-15 14:15:07,549 - DEBUG - Importing ImImagePlugin
+2025-10-15 14:15:07,550 - DEBUG - Importing ImtImagePlugin
+2025-10-15 14:15:07,552 - DEBUG - Importing IptcImagePlugin
+2025-10-15 14:15:07,553 - DEBUG - Importing JpegImagePlugin
+2025-10-15 14:15:07,553 - DEBUG - Importing Jpeg2KImagePlugin
+2025-10-15 14:15:07,553 - DEBUG - Importing McIdasImagePlugin
+2025-10-15 14:15:07,554 - DEBUG - Importing MicImagePlugin
+2025-10-15 14:15:07,561 - DEBUG - Importing MpegImagePlugin
+2025-10-15 14:15:07,563 - DEBUG - Importing MpoImagePlugin
+2025-10-15 14:15:07,565 - DEBUG - Importing MspImagePlugin
+2025-10-15 14:15:07,566 - DEBUG - Importing PalmImagePlugin
+2025-10-15 14:15:07,568 - DEBUG - Importing PcdImagePlugin
+2025-10-15 14:15:07,570 - DEBUG - Importing PcxImagePlugin
+2025-10-15 14:15:07,570 - DEBUG - Importing PdfImagePlugin
+2025-10-15 14:15:07,577 - DEBUG - Importing PixarImagePlugin
+2025-10-15 14:15:07,579 - DEBUG - Importing PngImagePlugin
+2025-10-15 14:15:07,579 - DEBUG - Importing PpmImagePlugin
+2025-10-15 14:15:07,579 - DEBUG - Importing PsdImagePlugin
+2025-10-15 14:15:07,581 - DEBUG - Importing QoiImagePlugin
+2025-10-15 14:15:07,582 - DEBUG - Importing SgiImagePlugin
+2025-10-15 14:15:07,583 - DEBUG - Importing SpiderImagePlugin
+2025-10-15 14:15:07,585 - DEBUG - Importing SunImagePlugin
+2025-10-15 14:15:07,586 - DEBUG - Importing TgaImagePlugin
+2025-10-15 14:15:07,587 - DEBUG - Importing TiffImagePlugin
+2025-10-15 14:15:07,587 - DEBUG - Importing WebPImagePlugin
+2025-10-15 14:15:07,614 - DEBUG - Importing WmfImagePlugin
+2025-10-15 14:15:07,616 - DEBUG - Importing XbmImagePlugin
+2025-10-15 14:15:07,619 - DEBUG - Importing XpmImagePlugin
+2025-10-15 14:15:07,621 - DEBUG - Importing XVThumbImagePlugin
+2025-10-15 14:15:07,623 - DEBUG - STREAM b'IHDR' 37113 13
+2025-10-15 14:15:07,624 - DEBUG - STREAM b'IDAT' 37138 48880
+2025-10-15 14:15:07,674 - INFO - Application started, Prelaunch window opened
+2025-10-15 14:15:07,674 - INFO - Prelaunch window initialized
+2025-10-15 14:15:07,676 - DEBUG - Loaded settings: {'fiji_dir': 'C:/Users/NotEW/Documents/Code/roboai/gui/Fiji', 'preset': {'test tube': {'addlightness': 90, 'prominence': 65}, 'bottle': {'addlightness': 105, 'prominence': 90}, 'test tube in prototype': {'addlightness': 105, 'prominence': 90}, 'custom': {'addlightness': '12', 'prominence': '98'}}, 'env': 'test tube', 'JAVA_HOME': 'C:/Program Files/Java/jdk-21'}
+2025-10-15 14:15:08,139 - INFO - ImageJ doctor checkup completed

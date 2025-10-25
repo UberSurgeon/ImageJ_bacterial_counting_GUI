@@ -1,99 +1,86 @@
-2025-10-10 13:54:01,737 - INFO - Starting application execution
-2025-10-10 13:54:01,826 - DEBUG - Importing BlpImagePlugin
-2025-10-10 13:54:01,827 - DEBUG - Importing BmpImagePlugin
-2025-10-10 13:54:01,827 - DEBUG - Importing BufrStubImagePlugin
-2025-10-10 13:54:01,828 - DEBUG - Importing CurImagePlugin
-2025-10-10 13:54:01,828 - DEBUG - Importing DcxImagePlugin
-2025-10-10 13:54:01,829 - DEBUG - Importing DdsImagePlugin
-2025-10-10 13:54:01,831 - DEBUG - Importing EpsImagePlugin
-2025-10-10 13:54:01,832 - DEBUG - Importing FitsImagePlugin
-2025-10-10 13:54:01,833 - DEBUG - Importing FliImagePlugin
-2025-10-10 13:54:01,834 - DEBUG - Importing FpxImagePlugin
-2025-10-10 13:54:01,834 - DEBUG - Image: failed to import FpxImagePlugin: No module named 'olefile'
-2025-10-10 13:54:01,835 - DEBUG - Importing FtexImagePlugin
-2025-10-10 13:54:01,835 - DEBUG - Importing GbrImagePlugin
-2025-10-10 13:54:01,836 - DEBUG - Importing GifImagePlugin
-2025-10-10 13:54:01,836 - DEBUG - Importing GribStubImagePlugin
-2025-10-10 13:54:01,836 - DEBUG - Importing Hdf5StubImagePlugin
-2025-10-10 13:54:01,837 - DEBUG - Importing IcnsImagePlugin
-2025-10-10 13:54:01,839 - DEBUG - Importing IcoImagePlugin
-2025-10-10 13:54:01,840 - DEBUG - Importing ImImagePlugin
-2025-10-10 13:54:01,840 - DEBUG - Importing ImtImagePlugin
-2025-10-10 13:54:01,841 - DEBUG - Importing IptcImagePlugin
-2025-10-10 13:54:01,841 - DEBUG - Importing JpegImagePlugin
-2025-10-10 13:54:01,841 - DEBUG - Importing Jpeg2KImagePlugin
-2025-10-10 13:54:01,841 - DEBUG - Importing McIdasImagePlugin
-2025-10-10 13:54:01,842 - DEBUG - Importing MicImagePlugin
-2025-10-10 13:54:01,842 - DEBUG - Image: failed to import MicImagePlugin: No module named 'olefile'
-2025-10-10 13:54:01,842 - DEBUG - Importing MpegImagePlugin
-2025-10-10 13:54:01,842 - DEBUG - Importing MpoImagePlugin
-2025-10-10 13:54:01,845 - DEBUG - Importing MspImagePlugin
-2025-10-10 13:54:01,846 - DEBUG - Importing PalmImagePlugin
-2025-10-10 13:54:01,847 - DEBUG - Importing PcdImagePlugin
-2025-10-10 13:54:01,847 - DEBUG - Importing PcxImagePlugin
-2025-10-10 13:54:01,847 - DEBUG - Importing PdfImagePlugin
-2025-10-10 13:54:01,851 - DEBUG - Importing PixarImagePlugin
-2025-10-10 13:54:01,851 - DEBUG - Importing PngImagePlugin
-2025-10-10 13:54:01,851 - DEBUG - Importing PpmImagePlugin
-2025-10-10 13:54:01,851 - DEBUG - Importing PsdImagePlugin
-2025-10-10 13:54:01,852 - DEBUG - Importing QoiImagePlugin
-2025-10-10 13:54:01,852 - DEBUG - Importing SgiImagePlugin
-2025-10-10 13:54:01,853 - DEBUG - Importing SpiderImagePlugin
-2025-10-10 13:54:01,853 - DEBUG - Importing SunImagePlugin
-2025-10-10 13:54:01,854 - DEBUG - Importing TgaImagePlugin
-2025-10-10 13:54:01,854 - DEBUG - Importing TiffImagePlugin
-2025-10-10 13:54:01,854 - DEBUG - Importing WebPImagePlugin
-2025-10-10 13:54:01,856 - DEBUG - Importing WmfImagePlugin
-2025-10-10 13:54:01,856 - DEBUG - Importing XbmImagePlugin
-2025-10-10 13:54:01,857 - DEBUG - Importing XpmImagePlugin
-2025-10-10 13:54:01,858 - DEBUG - Importing XVThumbImagePlugin
-2025-10-10 13:54:01,859 - DEBUG - STREAM b'IHDR' 37113 13
-2025-10-10 13:54:01,859 - DEBUG - STREAM b'IDAT' 37138 48880
-2025-10-10 13:54:01,870 - INFO - Application started, Prelaunch window opened
-2025-10-10 13:54:01,870 - INFO - Prelaunch window initialized
-2025-10-10 13:54:01,870 - DEBUG - Loaded settings: {'fiji_dir': 'C:/Users/NotEW/Documents/Code/roboai/gui/Fiji', 'preset': {'test tube': {'addlightness': 90, 'prominence': 65}, 'bottle': {'addlightness': 105, 'prominence': 90}, 'test tube in prototype': {'addlightness': 105, 'prominence': 90}, 'custom': {'addlightness': '12', 'prominence': '98'}}, 'env': 'test tube', 'JAVA_HOME': 'C:/Program Files/Java/jdk-21'}
-2025-10-10 13:54:02,223 - INFO - ImageJ doctor checkup completed
-2025-10-10 13:54:04,983 - INFO - User confirmed to launch main window
-2025-10-10 13:54:05,009 - INFO - Initializing main window
-2025-10-10 13:54:05,010 - DEBUG - Loaded settings: {'fiji_dir': 'C:/Users/NotEW/Documents/Code/roboai/gui/Fiji', 'preset': {'test tube': {'addlightness': 90, 'prominence': 65}, 'bottle': {'addlightness': 105, 'prominence': 90}, 'test tube in prototype': {'addlightness': 105, 'prominence': 90}, 'custom': {'addlightness': '12', 'prominence': '98'}}, 'env': 'test tube', 'JAVA_HOME': 'C:/Program Files/Java/jdk-21'}
-2025-10-10 13:54:05,092 - DEBUG - Detected existing Java version: (21, 0, 7)
-2025-10-10 13:54:05,092 - DEBUG - Adding option: --add-opens=java.base/java.lang=ALL-UNNAMED
-2025-10-10 13:54:05,092 - DEBUG - Local path to ImageJ2 installation given: C:\Users\NotEW\Documents\Code\roboai\gui\Fiji
-2025-10-10 13:54:05,095 - INFO - Added 573 JARs to the Java classpath.
-2025-10-10 13:54:05,095 - DEBUG - Adding jars from endpoints ['net.imglib2:imglib2-imglyb:1.1.0']
-2025-10-10 13:54:05,111 - DEBUG - Using endpoints ['net.imglib2:imglib2-imglyb:1.1.0']
-2025-10-10 13:54:05,111 - DEBUG - Getting verbose level: 0
-2025-10-10 13:54:05,111 - DEBUG - Returning expanded coordinate net.imglib2:imglib2-imglyb:1.1.0.
-2025-10-10 13:54:05,112 - DEBUG - Starting JVM
-2025-10-10 13:54:05,855 - DEBUG - Initializing type converters
-2025-10-10 13:54:05,855 - DEBUG - Java converters:{'
+2025-10-25 18:56:20,792 - INFO - Starting application execution
+2025-10-25 18:56:21,304 - DEBUG - Importing BlpImagePlugin
+2025-10-25 18:56:21,305 - DEBUG - Importing BmpImagePlugin
+2025-10-25 18:56:21,305 - DEBUG - Importing BufrStubImagePlugin
+2025-10-25 18:56:21,307 - DEBUG - Importing CurImagePlugin
+2025-10-25 18:56:21,307 - DEBUG - Importing DcxImagePlugin
+2025-10-25 18:56:21,309 - DEBUG - Importing DdsImagePlugin
+2025-10-25 18:56:21,312 - DEBUG - Importing EpsImagePlugin
+2025-10-25 18:56:21,313 - DEBUG - Importing FitsImagePlugin
+2025-10-25 18:56:21,314 - DEBUG - Importing FliImagePlugin
+2025-10-25 18:56:21,317 - DEBUG - Importing FpxImagePlugin
+2025-10-25 18:56:21,320 - DEBUG - Importing FtexImagePlugin
+2025-10-25 18:56:21,321 - DEBUG - Importing GbrImagePlugin
+2025-10-25 18:56:21,322 - DEBUG - Importing GifImagePlugin
+2025-10-25 18:56:21,322 - DEBUG - Importing GribStubImagePlugin
+2025-10-25 18:56:21,323 - DEBUG - Importing Hdf5StubImagePlugin
+2025-10-25 18:56:21,324 - DEBUG - Importing IcnsImagePlugin
+2025-10-25 18:56:21,327 - DEBUG - Importing IcoImagePlugin
+2025-10-25 18:56:21,329 - DEBUG - Importing ImImagePlugin
+2025-10-25 18:56:21,330 - DEBUG - Importing ImtImagePlugin
+2025-10-25 18:56:21,332 - DEBUG - Importing IptcImagePlugin
+2025-10-25 18:56:21,333 - DEBUG - Importing JpegImagePlugin
+2025-10-25 18:56:21,333 - DEBUG - Importing Jpeg2KImagePlugin
+2025-10-25 18:56:21,333 - DEBUG - Importing McIdasImagePlugin
+2025-10-25 18:56:21,334 - DEBUG - Importing MicImagePlugin
+2025-10-25 18:56:21,341 - DEBUG - Importing MpegImagePlugin
+2025-10-25 18:56:21,342 - DEBUG - Importing MpoImagePlugin
+2025-10-25 18:56:21,343 - DEBUG - Importing MspImagePlugin
+2025-10-25 18:56:21,344 - DEBUG - Importing PalmImagePlugin
+2025-10-25 18:56:21,345 - DEBUG - Importing PcdImagePlugin
+2025-10-25 18:56:21,346 - DEBUG - Importing PcxImagePlugin
+2025-10-25 18:56:21,346 - DEBUG - Importing PdfImagePlugin
+2025-10-25 18:56:21,352 - DEBUG - Importing PixarImagePlugin
+2025-10-25 18:56:21,353 - DEBUG - Importing PngImagePlugin
+2025-10-25 18:56:21,353 - DEBUG - Importing PpmImagePlugin
+2025-10-25 18:56:21,353 - DEBUG - Importing PsdImagePlugin
+2025-10-25 18:56:21,354 - DEBUG - Importing QoiImagePlugin
+2025-10-25 18:56:21,355 - DEBUG - Importing SgiImagePlugin
+2025-10-25 18:56:21,357 - DEBUG - Importing SpiderImagePlugin
+2025-10-25 18:56:21,359 - DEBUG - Importing SunImagePlugin
+2025-10-25 18:56:21,359 - DEBUG - Importing TgaImagePlugin
+2025-10-25 18:56:21,361 - DEBUG - Importing TiffImagePlugin
+2025-10-25 18:56:21,361 - DEBUG - Importing WebPImagePlugin
+2025-10-25 18:56:21,389 - DEBUG - Importing WmfImagePlugin
+2025-10-25 18:56:21,391 - DEBUG - Importing XbmImagePlugin
+2025-10-25 18:56:21,393 - DEBUG - Importing XpmImagePlugin
+2025-10-25 18:56:21,393 - DEBUG - Importing XVThumbImagePlugin
+2025-10-25 18:56:21,396 - DEBUG - STREAM b'IHDR' 37113 13
+2025-10-25 18:56:21,396 - DEBUG - STREAM b'IDAT' 37138 48880
+2025-10-25 18:56:21,421 - INFO - Application started, Prelaunch window opened
+2025-10-25 18:56:21,421 - INFO - Prelaunch window initialized
+2025-10-25 18:56:21,421 - INFO - in prolaunch
+2025-10-25 18:56:21,431 - DEBUG - Loaded settings: {'fiji_dir': 'C:/Users/NotEW/Documents/Code/roboai/gui/Fiji', 'preset': {'test tube': {'addlightness': 90, 'prominence': 65}, 'bottle': {'addlightness': 105, 'prominence': 90}, 'test tube in prototype': {'addlightness': 105, 'prominence': 90}, 'custom': {'addlightness': '12', 'prominence': '98'}}, 'env': 'test tube', 'JAVA_HOME': 'C:/Program Files/Java/jdk-21', 'launch': 0}
+2025-10-25 18:56:21,431 - INFO - first time
+2025-10-25 18:56:24,188 - INFO - ImageJ doctor checkup completed
+2025-10-25 18:56:24,194 - INFO - out prelaunch
+2025-10-25 18:56:40,344 - INFO - User confirmed to launch main window
+2025-10-25 18:56:40,403 - DEBUG - Settings updated and saved successfully
+2025-10-25 18:56:40,403 - INFO - Updated launch: 1
+2025-10-25 18:56:40,403 - INFO - Initializing main window
+2025-10-25 18:56:40,411 - DEBUG - Loaded settings: {'fiji_dir': 'C:/Users/NotEW/Documents/Code/roboai/gui/Fiji', 'preset': {'test tube': {'addlightness': 90, 'prominence': 65}, 'bottle': {'addlightness': 105, 'prominence': 90}, 'test tube in prototype': {'addlightness': 105, 'prominence': 90}, 'custom': {'addlightness': '12', 'prominence': '98'}}, 'env': 'test tube', 'JAVA_HOME': 'C:/Program Files/Java/jdk-21', 'launch': 1}
+2025-10-25 18:56:40,495 - DEBUG - Detected existing Java version: (21, 0, 7)
+2025-10-25 18:56:40,495 - DEBUG - Adding option: --add-opens=java.base/java.lang=ALL-UNNAMED
+2025-10-25 18:56:40,496 - DEBUG - Local path to ImageJ2 installation given: C:\Users\NotEW\Documents\Code\roboai\gui\Fiji
+2025-10-25 18:56:40,500 - INFO - Added 573 JARs to the Java classpath.
+2025-10-25 18:56:40,500 - DEBUG - Adding jars from endpoints ['net.imglib2:imglib2-imglyb:1.1.0']
+2025-10-25 18:56:40,514 - DEBUG - Using endpoints ['net.imglib2:imglib2-imglyb:1.1.0']
+2025-10-25 18:56:40,514 - DEBUG - Getting verbose level: 0
+2025-10-25 18:56:40,516 - DEBUG - Returning expanded coordinate net.imglib2:imglib2-imglyb:1.1.0.
+2025-10-25 18:56:40,517 - DEBUG - Starting JVM
+2025-10-25 18:56:41,574 - DEBUG - Initializing type converters
+2025-10-25 18:56:41,574 - DEBUG - Java converters:{'
 -'.join(java_converters)}
-2025-10-10 13:54:05,855 - DEBUG - Python converters:{'
+2025-10-25 18:56:41,574 - DEBUG - Python converters:{'
 -'.join(py_converters)}
-2025-10-10 13:54:08,633 - INFO - ImageJ initialized successfully
-2025-10-10 13:54:08,641 - DEBUG - Temporary directories created at C:\Users\NotEW\AppData\Local\Temp\temp_dn_5eo8h
-2025-10-10 13:54:08,650 - INFO - Tab2 initialized successfully
-2025-10-10 13:54:08,651 - INFO - Tab1 initialized successfully
-2025-10-10 13:54:08,652 - INFO - Tab3 initialized successfully
-2025-10-10 13:54:08,652 - INFO - Tab4 initialized successfully
-2025-10-10 13:54:08,652 - INFO - Main window UI initialized
-2025-10-10 13:54:08,652 - INFO - Launching main window
-2025-10-10 13:54:38,521 - DEBUG - Updated save directory: C:/Users/NotEW/Documents/Code/roboai/sav
-2025-10-10 13:54:38,521 - DEBUG - Updated image list: ['C:\\Users\\NotEW\\Documents\\Code\\roboai\\sav\\raw\\gg.jpg']
-2025-10-10 13:54:38,521 - DEBUG - Change thumbnail size (743, 722) -> (500, 485)
-2025-10-10 13:54:38,533 - INFO - Displayed image: C:\Users\NotEW\Documents\Code\roboai\sav\raw\gg.jpg
-2025-10-10 13:54:38,533 - DEBUG - Updated save directory: C:/Users/NotEW/Documents/Code/roboai/sav
-2025-10-10 13:54:38,533 - DEBUG - Extracted metadata for 1 images
-2025-10-10 13:54:38,534 - DEBUG - Change thumbnail size (743, 722) -> (200, 194)
-2025-10-10 13:54:38,541 - INFO - Displayed image: C:\Users\NotEW\Documents\Code\roboai\sav\raw\gg.jpg
-2025-10-10 13:54:38,541 - DEBUG - Updated image list from C:/Users/NotEW/Documents/Code/roboai/sav\raw
-2025-10-10 13:54:38,541 - INFO - Opened project from C:/Users/NotEW/Documents/Code/roboai/sav
-2025-10-10 13:54:40,797 - DEBUG - Temporary directories created at C:\Users\NotEW\AppData\Local\Temp\temp_wlcofvci
-2025-10-10 13:54:40,797 - DEBUG - Updated save directory: None
-2025-10-10 13:54:40,797 - DEBUG - Updated save directory: None
-2025-10-10 13:54:40,797 - DEBUG - Updated temp directory: C:\Users\NotEW\AppData\Local\Temp\temp_wlcofvci
-2025-10-10 13:54:40,797 - DEBUG - No image selected — showing default text
-2025-10-10 13:54:40,797 - DEBUG - Updated temp directory: C:\Users\NotEW\AppData\Local\Temp\temp_wlcofvci
-2025-10-10 13:54:40,798 - INFO - Table updated with 0 entries
-2025-10-10 13:54:40,798 - DEBUG - No images found — showing default message
-2025-10-10 13:54:40,798 - INFO - new empty project
+2025-10-25 18:56:44,891 - INFO - ImageJ initialized successfully
+2025-10-25 18:56:44,921 - DEBUG - Temporary directories created at C:\Users\NotEW\AppData\Local\Temp\temp_476a9ly2
+2025-10-25 18:56:44,939 - INFO - Tab2 initialized successfully
+2025-10-25 18:56:44,943 - INFO - Tab1 initialized successfully
+2025-10-25 18:56:44,943 - INFO - Tab3 initialized successfully
+2025-10-25 18:56:44,944 - INFO - Tab4 initialized successfully
+2025-10-25 18:56:44,948 - INFO - Tab1_1 initialized successfully
+2025-10-25 18:56:44,948 - INFO - Main window UI initialized
+2025-10-25 18:56:44,949 - INFO - Launching main window
+2025-10-25 18:56:49,863 - DEBUG - Settings updated and saved successfully
+2025-10-25 18:56:49,863 - INFO - Updated launch: 0

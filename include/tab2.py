@@ -30,7 +30,7 @@ class Tab2(tk.Frame):
         self.img_metadata = []
         self.img_index = 0
         self.canvas_img_id = None
-        self.mode: Literal['raw', 'count'] = 'raw'
+        self.mode: Literal['count', 'dish'] = 'dish'
         self.results = None
 
         # Canvas for displaying thumbnails
@@ -54,7 +54,7 @@ class Tab2(tk.Frame):
         self.tool_bar = tk.Frame(self.left_frame, width=180, height=185, bg='grey')
         self.tool_bar.grid(row=2, column=0)
         tk.Label(self.tool_bar, text='Tools', relief='raised').grid(row=0, column=0)
-        tk.Button(self.tool_bar, text="raw", command=self.getRawImage, width=10).grid(row=2, column=0, padx=5, pady=5, sticky=tk.NSEW)
+        tk.Button(self.tool_bar, text="unchanged", command=self.getRawImage, width=10).grid(row=2, column=0, padx=5, pady=5, sticky=tk.NSEW)
         tk.Button(self.tool_bar, text="count", command=self.askReCount, width=8).grid(row=3, column=0, padx=5, pady=5, sticky=tk.NSEW)
         tk.Button(self.tool_bar, text=":", width=2, command=self.countSetting).grid(row=3, column=1, padx=5, pady=5, sticky=tk.NSEW)
 
@@ -94,10 +94,10 @@ class Tab2(tk.Frame):
     def getRawImage(self):
         """Load raw images from directory and display them."""
         try:
-            dst = utils.getDst(self.save_Dir, self.temp_dir, 'raw')
+            dst = utils.getDst(self.save_Dir, self.temp_dir, 'dish')
             self.img_list = [os.path.normpath(os.path.join(dst, f)) for f in os.listdir(dst)]
             if self.img_list:
-                self.mode = 'raw'
+                self.mode = 'dish'
                 self.results = []
                 self.createTable()
                 self.displayImage()
@@ -132,7 +132,7 @@ class Tab2(tk.Frame):
     def getCountImage(self):
         """Run ImageJ counting and display results."""
         try:
-            dst = utils.getDst(self.save_Dir, self.temp_dir, 'raw')
+            dst = utils.getDst(self.save_Dir, self.temp_dir, 'dish')
             imgDir = utils.getDst(self.save_Dir, self.temp_dir, 'count')
             dataDir = utils.getDst(self.save_Dir, self.temp_dir, 'data')
 

@@ -1,5 +1,5 @@
 {
-    "fiji_dir": "",
+    "fiji_dir": "C:/Users/NotEW/Documents/Code/roboai/gui/Fiji",
     "preset": {
         "test tube": {
             "addlightness": 90,
@@ -14,10 +14,11 @@
             "prominence": 90
         },
         "custom": {
-            "addlightness": "0",
-            "prominence": "0"
+            "addlightness": "12",
+            "prominence": "98"
         }
     },
     "env": "test tube",
-    "JAVA_HOME": ""
+    "JAVA_HOME": "C:/Program Files/Java/jdk-21",
+    "launch": 0
 }

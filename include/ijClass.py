@@ -36,7 +36,8 @@ class ImageJ():
         setprominence = setting['preset'][env]['prominence']
         
         print(f'env = {env}, light = {addLightness}, prom = {setprominence}')
-        ep = 40
+        # ep = 40
+        ep = 80
         
         for idx, imgPath in enumerate(img_list):
             imp = self.ij.IJ.openImage(imgPath)
@@ -69,7 +70,8 @@ class ImageJ():
             self.ij.IJ.run(imp, "Add...", f"value={addLightness}")
             
             # clear outer bg
-            roi = OvalRoi(ep/2, ep/2, (width-ep), (height-(ep+10)))
+            # roi = OvalRoi(ep/2, ep/2, (width-ep), (height-(ep+10)))
+            roi = OvalRoi(ep/2, ep/2 + 5, (width-ep-10), (height-(ep+10)))
             imp.setRoi(roi)
             self.ij.IJ.setBackgroundColor(255, 255, 255)
             self.ij.IJ.run(imp, "Clear Outside", "")
@@ -139,7 +141,8 @@ class ImageJ():
         setprominence = setting['preset'][env]['prominence']
         
         print(f'env = {env}, light = {addLightness}, prom = {setprominence}')
-        ep = 40
+        # ep = 40
+        ep = 80
         
         for idx, imgPath in enumerate(img_list):
             imp = self.ij.IJ.openImage(imgPath)
@@ -171,7 +174,8 @@ class ImageJ():
             self.ij.IJ.run(imp, "Median...", "radius=1")
             self.ij.IJ.run(imp, "Add...", f"value={addLightness}")
             
-            roi = OvalRoi(ep/2, ep/2, (width-ep), (height-(ep+10)))
+            # roi = OvalRoi(ep/2, ep/2, (width-ep), (height-(ep+10)))
+            roi = OvalRoi(ep/2, ep/2 + 5, (width-ep-10), (height-(ep+10)))
             imp.setRoi(roi)
             self.ij.IJ.setBackgroundColor(255, 255, 255)
             self.ij.IJ.run(imp, "Clear Outside", "")
