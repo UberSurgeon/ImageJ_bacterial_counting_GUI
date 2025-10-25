@@ -4,3 +4,8 @@ build/
 fiji/
 dist/
 macrotest.py
+
+*.jpg
+*.png
+best.pt
+traced_model.pt
