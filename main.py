@@ -45,6 +45,9 @@ import torch
 import stat
 from preprocess.minicpm_predict import ensure_ollama_ready
 
+if getattr(sys, 'frozen', False):
+    import pyi_splash
+
 
 loader = LoadingWindow("ImageJ...", spinner=True)
 
@@ -98,6 +101,10 @@ class Prelaunch(tk.Toplevel):
         tk.Label(self, text="Proceed to main app?").pack(pady=10)
         tk.Button(self, text="Yes", command=lambda: self._confirm(on_confirm)).pack(side="left", padx=30)
         tk.Button(self, text="No", command=self._exit).pack(side="right", padx=30)
+        
+        if getattr(sys, 'frozen', False):
+            pyi_splash.close()
+        
 
     def capture_checkup_output(self):
         # Perform ImageJ environment check and capture the output
