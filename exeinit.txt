@@ -1,2 +1,4 @@
-python -m PyInstaller --additional-hooks-dir=hooks --onefile -w --icon=img/icon.ico "main.py" --add-data "img;img" --exclude PyQt5 --exclude PySide6 --exclude qtpy --log-level=DEBUG --name=IJgui
+python -m PyInstaller --additional-hooks-dir=hooks --onefile -w --icon=img/icon.ico "main.py" --add-data "img;img" --add-data "preprocess;preprocess" --exclude PyQt5 --exclude PySide6 --exclude qtpy --log-level=DEBUG --name=IJgui
 
+#test
+python -m PyInstaller --additional-hooks-dir=hooks --onefile --icon=img/icon.ico "main.py" --add-data "img;img" --add-data "preprocess;preprocess" --exclude PyQt5 --exclude PySide6 --exclude qtpy --log-level=DEBUG --name=IJgui

@@ -27,7 +27,9 @@ from include.tab1 import Tab1
 from include.tab2 import Tab2
 from include.tab3 import Tab3
 from include.tab4 import Tab4
+from include.tab1_1 import Tab1_1
 from include.ijClass import ImageJ
+from include.loading import LoadingWindow
 import include.utils as utils
 import json
 import tempfile
@@ -39,26 +41,52 @@ import itertools
 import threading
 import time
 import sys
+import torch
+import stat
+from preprocess.minicpm_predict import ensure_ollama_ready
 
+
+loader = LoadingWindow("ImageJ...", spinner=True)
 
 class Prelaunch(tk.Toplevel):
     def __init__(self, master=None, on_confirm=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         utils.log_message('info', "Prelaunch window initialized")
+        
+        utils.log_message('info', 'in prolaunch')
+        self.protocol("WM_DELETE_WINDOW", self._exit)
 
         # Load configuration file
         with open(utils.settingPath(), 'r') as file:
             self.setting = json.load(file)
         utils.log_message('debug', f"Loaded settings: {self.setting}")
+        if self.setting['launch'] == 0:
+            utils.log_message('info', f"first time")
+        elif self.setting['launch'] == 1:
+            self._exit()
+            utils.log_message('info', f"not first time")
 
         # Display current JAVA_HOME and Fiji directories
         self.JHLb = tk.Label(self, text=f'JAVA_HOME={self.setting["JAVA_HOME"]}')
         self.FJLb = tk.Label(self, text=f'fiji_dir={self.setting["fiji_dir"]}')
+        self.torch = tk.Label(self)
+        
+        if torch.cuda.is_available():
+            self.torch.config(text=f'GPU available, {torch.cuda.get_device_properties(0)}')
+        else:
+            self.torch.config(text=f'GPU NOT available')
+            
+        self.olm = tk.Label(self, text=f'Ollama status={ensure_ollama_ready()}')
 
         self.JHLb.pack()
         tk.Button(self, text='Change JAVA_HOME', command=self.update_JAVA_HOME).pack()
         self.FJLb.pack()
         tk.Button(self, text='Change fiji_dir', command=self.update_fijiDir).pack()
+        self.torch.pack()
+        self.olm.pack()
+        
+        
+
 
         # Run ImageJ environment check
         text_box = tk.Text(self)
@@ -109,24 +137,30 @@ class Prelaunch(tk.Toplevel):
         # User confirmed to launch main window
         utils.log_message('info', "User confirmed to launch main window")
         self.destroy()
+        self.setting["launch"] = 1
+        self.update_setting()
+        utils.log_message('info', f"Updated launch: 1")
         on_confirm()
     
     def _exit(self):
+        self.quit()
         self.destroy()
-        exit(0)
+        sys.exit(0)
+        
+
 
 
 class Windows(tk.Toplevel):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         utils.log_message('info', "Initializing main window")
-
         try:
             # Load settings
             with open(utils.settingPath(), 'r') as file:
                 self.setting = json.load(file)
             utils.log_message('debug', f"Loaded settings: {self.setting}")
 
+            loader.start()
             # Initialize ImageJ
             os.environ['JAVA_HOME'] = self.setting["JAVA_HOME"]
             self.imageJ = ImageJ(self.setting["fiji_dir"], mode='interactive')
@@ -142,13 +176,17 @@ class Windows(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.window_exit)
 
         # Menu bar setup
-        menubar = tk.Menu()
-        self.config(menu=menubar)
+        self.menubar = tk.Menu(self)
+        self.config(menu=self.menubar)
 
-        fileMenu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label='save as', command=self.save)
-        menubar.add_cascade(label='open', command=self.open)
-        menubar.add_cascade(label='new', command=self.new)
+        # File menu
+        self.file_menu = tk.Menu(self.menubar, tearoff=False)
+        self.file_menu.add_command(label='New', command=self.new)
+        self.file_menu.add_command(label='Open', command=self.open)
+        self.file_menu.add_command(label='Save As', command=self.save)
+
+        self.menubar.add_cascade(label='File', menu=self.file_menu)
+
 
         # Create temporary directories
         self.setFolder()
@@ -168,33 +206,78 @@ class Windows(tk.Toplevel):
         # Tabs setup
         self.notebook = ttk.Notebook(self)
         self.tab2 = Tab2(self.notebook, imageJ=self.imageJ, setting=self.setting, temp_dir=self.temp_dir)
-        self.tab1 = Tab1(self.notebook, save_Dir=self.save_Dir, tab2=self.tab2, temp_dir=self.temp_dir)
+        self.tab1 = Tab1(self.notebook, save_Dir=self.save_Dir, temp_dir=self.temp_dir, windows=self)
         self.tab3 = Tab3(self.notebook)
         self.tab4 = Tab4(self.notebook)
+        self.tab1_1 = Tab1_1(self.notebook, save_Dir=self.save_Dir, temp_dir=self.temp_dir, windows=self)
         self.notebook.add(self.tab1, text="Upload Image")
+        self.notebook.add(self.tab1_1, text="rename")
         self.notebook.add(self.tab2, text="Count")
         self.notebook.add(self.tab3, text="Table Manager")
         self.notebook.add(self.tab4, text="Info/ Misc")
         self.notebook.grid(row=0, column=0, sticky=tk.NSEW)
         utils.log_message('info', "Main window UI initialized")
+        loader.stop()
+        self.lift()
+
 
     def window_exit(self):
         # Handle window close request
         close = messagebox.askyesno("Exit?", "Are you sure you want to exit? Any unsaved project will be lost")
         if close:
             try:
+                self.setting["launch"] = 0
+                # Save updated settings to file
+                with open(utils.settingPath(), 'w') as file:
+                    json.dump(self.setting, file, indent=4)
+                utils.log_message('debug', "Settings updated and saved successfully")
+                utils.log_message('info', "Updated launch: 0")
+                self.force_rmtree(self.temp_dir)
                 self.imageJ.exit()
-                shutil.rmtree(self.temp_dir, ignore_errors=True)
+                # shutil.rmtree(self.temp_dir, ignore_errors=True)
                 self.destroy()
                 utils.log_message('info', "Application closed and resources cleaned up")
+                sys.exit(0)
             except Exception as e:
                 utils.log_message('error', f"Error during application exit: {e}")
+                
+    def force_rmtree(self, path, retries=5, delay=0.5):
+        """Forcefully remove a folder and all contents, handling permissions and locks."""
+        if not os.path.exists(path):
+            return
+
+        def onerror(func, p, exc_info):
+            # Change permissions if file is read-only
+            try:
+                os.chmod(p, stat.S_IWRITE)
+                func(p)
+            except Exception:
+                pass  # Ignore errors but continue deleting
+
+        for i in range(retries):
+            try:
+                shutil.rmtree(path)
+                if not os.path.exists(path):
+                    return
+            except PermissionError:
+                # Sometimes a process (like ImageJ, Pillow, etc.) still holds the file
+                time.sleep(delay)
+            except Exception as e:
+                print(f"Warning: retry {i+1}/{retries} failed: {e}")
+                time.sleep(delay)
+        # Last resort
+        try:
+            shutil.rmtree(path, ignore_errors=True)
+        except Exception as e:
+            print(f"Final attempt failed to remove {path}: {e}")
     
     def setFolder(self):
         self.temp_dir = tempfile.mkdtemp(prefix="temp_")
         os.makedirs(os.path.join(self.temp_dir, "raw"), exist_ok=True)
         os.makedirs(os.path.join(self.temp_dir, "imageJ", "data"), exist_ok=True)
         os.makedirs(os.path.join(self.temp_dir, "imageJ", "result"), exist_ok=True)
+        os.makedirs(os.path.join(self.temp_dir, "crop", ), exist_ok=True)
+        # os.makedirs(os.path.join(self.temp_dir, "crop", "labels"), exist_ok=True)
         utils.log_message('debug', f"Temporary directories created at {self.temp_dir}")
 
     def save(self):
@@ -206,8 +289,7 @@ class Windows(tk.Toplevel):
             return
         shutil.copytree(self.temp_dir, self.save_Dir, dirs_exist_ok=True)
         self.wm_title(self.save_Dir)
-        self.tab1.update_save_Dir(self.save_Dir)
-        self.tab2.update_save_Dir(self.save_Dir)
+        self.update_save()
         utils.log_message('info', f"Project saved to {self.save_Dir}")
         # else:
         #     utils.infoMsg('Information', 'project already saved')
@@ -224,9 +306,9 @@ class Windows(tk.Toplevel):
             return
         else:
             self.wm_title(self.save_Dir)
-            self.tab1.update_save_Dir(self.save_Dir)
-            self.tab2.update_save_Dir(self.save_Dir)
+            self.update_save()
             utils.log_message('info', f"Opened project from {self.save_Dir}")
+            self.change_tab(2)
         # else:
         #     utils.infoMsg('Information', 'project already been open/ created')
         #     utils.log_message('warning', "Open attempted but project already open")
@@ -237,11 +319,33 @@ class Windows(tk.Toplevel):
             self.save_Dir = None
             self.setFolder()
             self.wm_title('Untitled_Project')
-            self.tab1.update_save_Dir(self.save_Dir)
-            self.tab2.update_save_Dir(self.save_Dir)
-            self.tab1.update_temp_Dir(self.temp_dir)
-            self.tab2.update_temp_Dir(self.temp_dir)
+            self.update_save()
+            self.update_temp()
             utils.log_message('info', "new empty project")
+            self.change_tab(0)
+
+    def update_save(self):
+        self.tab1.update_save_Dir(self.save_Dir)
+        self.tab2.update_save_Dir(self.save_Dir)
+        
+
+    def update_temp(self):
+        self.tab1.update_temp_Dir(self.temp_dir)
+        self.tab2.update_temp_Dir(self.temp_dir)
+        print(self.tab2.temp_dir)
+        
+    def update_img(self):
+        # Display and update tab2
+        self.tab2.mode = 'dish'
+        self.tab2.displayImage()
+
+    def update_img_dict_list(self, img_dict_list):
+        # print(img_dict_list)
+        self.tab1_1.updateImage(img_dict_list)     
+        
+    def change_tab(self, id):
+        self.notebook.select(id)
+
 
 def main():
     # Initialize base Tk root and launch Prelaunch first
@@ -250,13 +354,18 @@ def main():
     utils.set_icon(root)
     utils.log_message('info', "Application started, Prelaunch window opened")
 
+
     def launch_main():
         # Launch main app after prelaunch confirmation
         app = Windows(root)
         utils.log_message('info', "Launching main window")
         app.mainloop()
 
+
     pre = Prelaunch(root, on_confirm=launch_main)
+    utils.log_message('info', 'out prelaunch')
+
+
     root.mainloop()
     utils.log_message('info', "Main event loop ended")
 

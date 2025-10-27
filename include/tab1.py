@@ -5,16 +5,20 @@ import os
 import shutil
 from tkinter import ttk
 from include.imageViewer import CanvasImage
-from include.tab2 import Tab2
+from include.loading import LoadingWindow
+from preprocess.orientation import reOrientation
 import include.utils as utils
+from preprocess.preproces import preprocess
+from PIL.ExifTags import TAGS
+
 
 
 class Tab1(tk.Frame):
-    def __init__(self, parent, save_Dir, tab2: Tab2, temp_dir):
+    def __init__(self, parent, save_Dir, temp_dir, windows):
         super().__init__(parent)
         ttk.Frame.__init__(self, master=parent)
 
-        self.tab2 = tab2
+        self.windows = windows
         self.temp_dir = temp_dir
         self.save_Dir = save_Dir
 
@@ -43,14 +47,18 @@ class Tab1(tk.Frame):
         button_fwd = tk.Button(self, text=">>", command=self.img_idx_fwd)
         button_upload = tk.Button(self, text="Upload", command=self.openFile)
         button_del = tk.Button(self, text='remove image', command=self.delImage)
+        button_crop = tk.Button(self, text='crop image', command=self.cropImage)
+        button_rotate = tk.Button(self, text="Rotate >", command=self.rotate)
 
         button_back.grid(row=2, column=0, sticky=tk.NSEW)
         button_upload.grid(row=2, column=1, sticky=tk.NSEW)
         button_fwd.grid(row=2, column=2, sticky=tk.NSEW)
         button_del.grid(row=3, column=1, sticky=tk.NSEW)
+        button_crop.grid(row=4, column=1, sticky=tk.NSEW)
+        button_rotate.grid(row=3, column=2, sticky=tk.NSEW)
         
-        self.bind_all("<Left>", lambda event: self.img_idx_back())
-        self.bind_all("<Right>", lambda event: self.img_idx_fwd())
+        self.bind_all("<Left>", self.img_idx_back)
+        self.bind_all("<Right>", self.img_idx_fwd)
 
         utils.log_message('info', "Tab1 initialized successfully")
 
@@ -76,8 +84,9 @@ class Tab1(tk.Frame):
             filepath = filedialog.askopenfiles(
                 initialdir='gui',
                 title='select images',
-                filetypes=[("all files", "*.*")]
+                filetypes=[('all types', '*.*'), ("jpg", "*.jpg"), ('png', '*.png'), ('tiff', '*.tiff')]
             )
+
             for file in filepath:
                 shutil.copy2(str(file.name), dst)
                 utils.log_message('info', f"Copied image: {file.name} to {dst}")
@@ -86,14 +95,26 @@ class Tab1(tk.Frame):
             self.img_list = []
             for filename in os.listdir(dst):
                 path = os.path.normpath(os.path.join(dst, filename))
+                # check if from sam
+                image = Image.open(path)
+
+                # Extract EXIF data
+                exif_data = image.getexif()
+                make = ""
+                model = ""
+                for tag_id, value in exif_data.items():
+                    tag_name = TAGS.get(tag_id, tag_id) # Convert tag ID to human-readable name
+                    if tag_name == "Make":
+                        make = value
+                    elif tag_name == "Model":
+                        model = value
+                if make == "samsung" and model == "SM-A336B":
+                    reOrientation(path)
                 self.img_list.append(path)
 
             utils.log_message('debug', f"Loaded image list: {self.img_list}")
 
-            # Display and update tab2
             self.displayImage()
-            self.tab2.mode = 'raw'
-            self.tab2.displayImage()
             utils.log_message('info', "Displayed uploaded images successfully")
 
         except Exception as e:
@@ -119,17 +140,35 @@ class Tab1(tk.Frame):
                     del self.img_list[self.img_index]
                     self.img_index = max(0, self.img_index - 1)
                     messagebox.showinfo(title='delImage', message='image removed')
-
-                    # Refresh views
                     self.displayImage()
-                    self.tab2.img_index = self.img_index
-                    self.tab2.displayImage()
+
                 except Exception as e:
                     utils.errorMsg('delImage', f'Failed to delete {imgPath}: {e}')
                     utils.log_message('error', f"Failed to delete image {imgPath}: {e}")
         else:
             utils.errorMsg('delImage', 'Image does not exist')
             utils.log_message('warning', f"Tried to delete non-existent image: {imgPath}")
+            
+    def cropImage(self):
+        utils.log_message('info', "start cropping process")
+        if not self.img_list:
+            utils.log_message('warning', "Crop image attempted with empty list")
+            return
+
+        dst = utils.getDst(self.save_Dir, self.temp_dir, 'raw')
+        out = utils.getDst(self.save_Dir, self.temp_dir, 'crop')
+        utils.log_message('info', f'cropimg dst = {dst}')
+        utils.log_message('info', f'croping out = {out}')
+        try:
+            result = preprocess(dst, out)
+            self.windows.update_img_dict_list(result)
+            self.windows.change_tab(1)
+        except Exception as e:
+            utils.errorMsg('cropImage', f'Failed to crop {dst}: {e}')
+            utils.log_message('error', f"Failed to crop image {dst}: {e}")
+            utils.log_message('info', f'dst = {dst}')
+            utils.log_message('info', f'out = {out}')
+        
 
     def displayImage(self):
         """Display image on canvas"""
@@ -164,14 +203,14 @@ class Tab1(tk.Frame):
             utils.errorMsg(title='displayImage', msg=f'error in displayImage {e}')
             utils.log_message('error', f"Error displaying image: {e}")
 
-    def img_idx_fwd(self):
+    def img_idx_fwd(self, event=None):
         """Go to next image in list"""
         if self.img_index < len(self.img_list) - 1:
             self.img_index += 1
             utils.log_message('debug', f"Switched to next image index: {self.img_index}")
             self.displayImage()
 
-    def img_idx_back(self):
+    def img_idx_back(self, event=None):
         """Go to previous image in list"""
         if self.img_index > 0:
             self.img_index -= 1
@@ -204,7 +243,7 @@ class Tab1(tk.Frame):
         utils.log_message('debug', f"Updated save directory: {self.save_Dir}")
         if self.save_Dir is not None:
             self.updateImage()
-   
+
     def update_temp_Dir(self, temp_dir):
         """Update save directory and refresh images"""
         self.temp_dir = temp_dir
@@ -213,3 +252,21 @@ class Tab1(tk.Frame):
             self.updateImage()
             self.img_list = []
             self.displayImage()
+
+    def rotate(self, angle=-90):
+        """rotate currently displayed image"""
+        if not self.img_list:
+            utils.log_message('warning', "rotate image attempted with empty list")
+            return
+        imgPath = self.img_list[self.img_index]
+        self.img = Image.open(imgPath)
+        self.img = self.img.rotate(angle, resample=Image.BICUBIC, expand=True)
+        if os.path.exists(imgPath):
+            try:
+                self.img.save(imgPath)
+                self.updateImage()
+                self.displayImage()
+                utils.log_message('info', f"Rotated image saved: {imgPath}")
+            except Exception as e:
+                utils.errorMsg('rotateImage', f'Failed to replace rotated image {imgPath}: {e}')
+                utils.log_message('error', f"Failed to replace rotated image {imgPath}: {e}")

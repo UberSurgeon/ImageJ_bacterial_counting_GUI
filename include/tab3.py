@@ -85,7 +85,7 @@ class Tab3(tk.Frame):
             df["SampleType"] = (
                 df["Filename"].str.split("_").str[0].str.split("-").str[1]
             )
-
+    
             # Extract base name BEFORE the sample type (for grouping)
             df["BaseName"] = df["Filename"].str.split("-").str[0]
 

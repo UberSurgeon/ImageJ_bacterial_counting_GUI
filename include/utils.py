@@ -4,6 +4,7 @@ from tkinter import messagebox
 from typing import Literal, Union
 import logging
 from typing import Literal
+import tkinter as tk
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -48,7 +49,7 @@ def infoMsg(title, msg):
     log_message('info', f'{title} - {msg}')
 
 # path
-def getDst(save_Dir: Union[str, None], temp_dir: str, dst: Literal['raw', 'count', 'data']):
+def getDst(save_Dir: Union[str, None], temp_dir: str, dst: Literal['raw', 'count', 'data', 'crop', 'dish']):
         if save_Dir is None:
             if dst == 'raw':
                 x = os.path.join(temp_dir, 'raw')
@@ -56,6 +57,10 @@ def getDst(save_Dir: Union[str, None], temp_dir: str, dst: Literal['raw', 'count
                 x = os.path.join(temp_dir, 'imageJ', 'result')
             elif dst == 'data':
                 x = os.path.join(temp_dir, 'imageJ', 'data')
+            elif dst == 'crop':
+                x = os.path.join(temp_dir, 'crop')
+            elif dst == 'dish':
+                x = os.path.join(temp_dir, 'crop', 'raw', 'dishes')
         elif save_Dir is not None:
             if dst == 'raw':
                 x = os.path.join(save_Dir, 'raw')
@@ -63,6 +68,10 @@ def getDst(save_Dir: Union[str, None], temp_dir: str, dst: Literal['raw', 'count
                 x = os.path.join(save_Dir, 'imageJ', 'result')
             elif dst == 'data':
                 x = os.path.join(save_Dir, 'imageJ', 'data')
+            elif dst == 'crop':
+                x = os.path.join(save_Dir, 'crop')
+            elif dst == 'dish':
+                x = os.path.join(save_Dir, 'crop', 'raw', 'dishes')
         else:
             warningMsg(title='getDst', msg=f'dst in getDst not accounted -> {dst}')
         return os.path.normpath(x)
@@ -111,4 +120,3 @@ def best_fit(oldsize, picsize):
                 new_width, new_height}')
     
     return (new_width, new_height)
-
