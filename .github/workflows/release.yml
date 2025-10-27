@@ -1,0 +1,31 @@
+name: Build & Large Release (on tag)
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-release:
+    permissions:
+      contents: write     # required to create/upload a release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # TODO: Build or produce your large files here
+      # Make sure they end up under out/*.zip (or change the glob below)
+      - name: Build
+        run: |
+          mkdir -p out
+          # Example: create a big file (replace with your real build)
+          dd if=/dev/zero of=out/huge.zip bs=1M count=3000
+
+      # Create (draft) release and upload large files (split automatically)
+      - name: Create large release
+        uses: ading2210/gh-large-releases@v1
+        with:
+          draft: true
+          files: out/*.zip
