@@ -1,14 +1,20 @@
 from preprocess.crop_from_yolo import cropFromYolo
 from preprocess.minicpm_predict import predict_labels
 import include.utils as utils
+from include.loading import LoadingWindow
 
 import os
 import re
 from pathlib import Path
 from typing import List, Dict
 
+cropping = LoadingWindow("cropping...", spinner=True)
+labeling = LoadingWindow("reading Label...", spinner=True)
+
 def preprocess(path: str, outPath: str) -> List[Dict[str, str]]:
+    cropping.start()
     out = cropFromYolo(path, outPath)
+    cropping.stop()
 
     utils.log_message('info', f'cropping in -> {path}')
     try:
@@ -66,7 +72,9 @@ def preprocess(path: str, outPath: str) -> List[Dict[str, str]]:
 
     utils.log_message('info', f'start predicting label in -> {label_paths}')
     try:
+        labeling.start()
         preds = predict_labels(label_paths)
+        labeling.stop()
     except Exception as e:
         utils.errorMsg('preprocess', f'predict_labels-error -> {e}')
  

@@ -29,6 +29,7 @@ from include.tab3 import Tab3
 from include.tab4 import Tab4
 from include.tab1_1 import Tab1_1
 from include.ijClass import ImageJ
+from include.loading import LoadingWindow
 import include.utils as utils
 import json
 import tempfile
@@ -44,6 +45,8 @@ import torch
 import stat
 from preprocess.minicpm_predict import ensure_ollama_ready
 
+
+loader = LoadingWindow("ImageJ...", spinner=True)
 
 class Prelaunch(tk.Toplevel):
     def __init__(self, master=None, on_confirm=None, *args, **kwargs):
@@ -151,13 +154,13 @@ class Windows(tk.Toplevel):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         utils.log_message('info', "Initializing main window")
-
         try:
             # Load settings
             with open(utils.settingPath(), 'r') as file:
                 self.setting = json.load(file)
             utils.log_message('debug', f"Loaded settings: {self.setting}")
 
+            loader.start()
             # Initialize ImageJ
             os.environ['JAVA_HOME'] = self.setting["JAVA_HOME"]
             self.imageJ = ImageJ(self.setting["fiji_dir"], mode='interactive')
@@ -214,6 +217,9 @@ class Windows(tk.Toplevel):
         self.notebook.add(self.tab4, text="Info/ Misc")
         self.notebook.grid(row=0, column=0, sticky=tk.NSEW)
         utils.log_message('info', "Main window UI initialized")
+        loader.stop()
+        self.lift()
+
 
     def window_exit(self):
         # Handle window close request
@@ -347,6 +353,7 @@ def main():
     root.withdraw()
     utils.set_icon(root)
     utils.log_message('info', "Application started, Prelaunch window opened")
+
 
     def launch_main():
         # Launch main app after prelaunch confirmation

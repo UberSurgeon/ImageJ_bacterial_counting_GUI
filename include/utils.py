@@ -4,6 +4,7 @@ from tkinter import messagebox
 from typing import Literal, Union
 import logging
 from typing import Literal
+import tkinter as tk
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -119,4 +120,3 @@ def best_fit(oldsize, picsize):
                 new_width, new_height}')
     
     return (new_width, new_height)
-

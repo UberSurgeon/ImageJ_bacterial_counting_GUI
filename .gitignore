@@ -3,9 +3,18 @@ gg.jpg
 build/
 fiji/
 dist/
+hooks/
 macrotest.py
 
 *.jpg
 *.png
 best.pt
 traced_model.pt
+.gitignore
+preprocess/yolov7
+setting/setting.json
+test_img
+*.zip
+test.py
+traced_model.pt
+out/

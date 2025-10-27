@@ -5,10 +5,12 @@ import os
 import shutil
 from tkinter import ttk
 from include.imageViewer import CanvasImage
+from include.loading import LoadingWindow
 from preprocess.orientation import reOrientation
 import include.utils as utils
 from preprocess.preproces import preprocess
 from PIL.ExifTags import TAGS
+
 
 
 class Tab1(tk.Frame):
@@ -138,6 +140,7 @@ class Tab1(tk.Frame):
                     del self.img_list[self.img_index]
                     self.img_index = max(0, self.img_index - 1)
                     messagebox.showinfo(title='delImage', message='image removed')
+                    self.displayImage()
 
                 except Exception as e:
                     utils.errorMsg('delImage', f'Failed to delete {imgPath}: {e}')
