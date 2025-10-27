@@ -1,48 +1,82 @@
+from multiprocessing import Process, Value, freeze_support, set_start_method
 import tkinter as tk
-import threading
+import time
+import include.utils as utils 
 
 class LoadingWindow:
-    def __init__(self, text, spinner=True, delay=150):
-        self.text = f"loading >> {text}"
+    def __init__(self, text="Loading...", spinner=True, delay=150):
+        freeze_support()  # required for pyinstaller on Windows
+        try:
+            set_start_method('spawn')
+        except RuntimeError:
+            pass
+
+        self.text = text
         self.spinner = spinner
         self.delay = delay
-        self.running = False
-        self.thread = None
-    
+        self._run_flag = Value('i', 1)
+        self.process = None
+
+    @staticmethod
+    def _run_window(text, spinner, delay, run_flag):
+        """Executed in a separate process: creates its own Tkinter loop."""
+        root = tk.Tk()
+        utils.set_icon(root)
+        root.title("Loading...")
+        root.geometry("250x100")
+        root.resizable(False, False)
+        root.attributes("-topmost", True)
+        label = tk.Label(root, text=text, font=("Arial", 8))
+        label.pack(expand=True, pady=20)
+
+        spinner_chars = ["|", "/", "-", "\\"]
+        idx = 0
+
+        def animate():
+            nonlocal idx
+            if run_flag.value == 0:
+                root.destroy()
+                return
+            if spinner:
+                label.config(text=f"{text} {spinner_chars[idx]}")
+                idx = (idx + 1) % len(spinner_chars)
+            root.after(delay, animate)
+
+        animate()
+        root.mainloop()
+
     def start(self):
-        self.running = True
-        self.thread = threading.Thread(target=self._run)
-        self.thread.start()
-        
+        self._run_flag.value = 1
+        self.process = Process(
+            target=self._run_window,
+            args=(self.text, self.spinner, self.delay, self._run_flag),
+            name='loading-window',
+        )
+        self.process.start()
+
     def stop(self):
-        self.running = False
+        if self.process and self.process.is_alive():
+            self._run_flag.value = 0
+            self.process.join(timeout=2)
+            self.process.close()
+            self.process = None
 
-    def _run(self):
-        self.root = tk.Tk()
-        self.root.title(self.text)
-        self.root.geometry("250x100")
-        self.root.resizable(False, False)
+    def run_with_loading(self, func, *args, **kwargs):
+        self.start()
+        try:
+            result = func(*args, **kwargs)
+        finally:
+            self.stop()
+        return result
 
-        self.label = tk.Label(self.root, text=self.text, font=("Arial", 5))
-        self.label.pack(expand=True, pady=20)
 
-        if self.spinner:
-            self.spinner_index = 0
-            self.spinner_chars = ["|", "/", "-", "\\"]
-            self._animate()
+if __name__ == "__main__":
+    # Test run
+    def demo_task():
+        for i in range(5):
+            print(f"Working... {i+1}/5")
+            time.sleep(1)
 
-        self._check_stop()
-        self.root.mainloop()
-
-    def _animate(self):
-        spinner_char = self.spinner_chars[self.spinner_index]
-        self.label.config(text=f"{self.text} {spinner_char}")
-        self.spinner_index = (self.spinner_index + 1) % len(self.spinner_chars)
-        if self.running:
-            self.root.after(self.delay, self._animate)
-
-    def _check_stop(self):
-        if not self.running:
-            self.root.destroy()
-        else:
-            self.root.after(100, self._check_stop)
+    loader = LoadingWindow("Initializing...", spinner=True)
+    loader.run_with_loading(demo_task)
+    print("Done!")
