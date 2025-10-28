@@ -69,7 +69,7 @@ class Tab1_1(tk.Frame):
         self.nameText = tk.Text(self, height=1, width=10)
         self.nameText.bind("<KeyRelease>", self.on_key_release)
         
-        self.confienceLabel = tk.Label(self, text='')
+        self.confidenceLabel = tk.Label(self, text='')
         
         self.confirm = tk.Button(self, text="done", command=self.on_confirm)
         
@@ -77,7 +77,7 @@ class Tab1_1(tk.Frame):
         self.nameText.grid(row=3, column=1, sticky=tk.NSEW)
         self.fileNameLabel.grid(row=4, column=0, sticky=tk.NSEW)
         self.confirm.grid(row=4, column=1, sticky=tk.NSEW)
-        self.confienceLabel.grid(row=5, column=0, sticky=tk.NSEW)
+        self.confidenceLabel.grid(row=5, column=0, sticky=tk.NSEW)
 
         # self.displayImage()
 
@@ -147,7 +147,7 @@ class Tab1_1(tk.Frame):
             self.img_dict_list[self.img_index]['name'] = self.img_dict_list[self.img_index]['prediction']
         else:
             text = self.img_dict_list[self.img_index]['name']
-        self.confienceLabel.config(text=f'confidence={self.img_dict_list[self.img_index]['confidence']}')
+        self.confidenceLabel.config(text=f'confidence={self.img_dict_list[self.img_index]['confidence']}')
         self.nameText.insert(tk.END, text)
 
     def on_confirm(self):
