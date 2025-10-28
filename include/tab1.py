@@ -57,11 +57,31 @@ class Tab1(tk.Frame):
         button_crop.grid(row=4, column=1, sticky=tk.NSEW)
         button_rotate.grid(row=3, column=2, sticky=tk.NSEW)
         
+        self.labeling = tk.IntVar(value=1)
+        labeling_toggle = tk.Checkbutton(
+            self,
+            text='predict labeling?',
+            variable=self.labeling,
+            onvalue=1,
+            offvalue=0
+            )
+        
+        labeling_toggle.grid(row=4, column=2, sticky=tk.NSEW)
+        
+        self.keeptrack = tk.Label(self, text='X/X')
+        self.keeptrack.grid(row=5, column=1, sticky=tk.NSEW)
+        
         self.bind_all("<Left>", self.img_idx_back)
         self.bind_all("<Right>", self.img_idx_fwd)
 
         utils.log_message('info', "Tab1 initialized successfully")
 
+    def updateTrackingLabel(self):
+        if self.img_list:
+            self.keeptrack.config(text=f"{self.img_index + 1}/{len(self.img_list)}")
+        else:
+            self.keeptrack.config(text="X/X")
+    
     def updateImage(self):
         """Refresh image list and display current image"""
         if self.save_Dir is not None:
@@ -160,7 +180,7 @@ class Tab1(tk.Frame):
         utils.log_message('info', f'cropimg dst = {dst}')
         utils.log_message('info', f'croping out = {out}')
         try:
-            result = preprocess(dst, out)
+            result = preprocess(dst, out, self.labeling.get())
             self.windows.update_img_dict_list(result)
             self.windows.change_tab(1)
         except Exception as e:
@@ -173,6 +193,7 @@ class Tab1(tk.Frame):
     def displayImage(self):
         """Display image on canvas"""
         if not self.img_list:
+            self.updateTrackingLabel()
             self.img_canvas.delete(self.canvas_img_id)
             self.canvas_img_id = None
             self.init_text_id = self.img_canvas.create_text(
@@ -196,7 +217,7 @@ class Tab1(tk.Frame):
                 )
             else:
                 self.img_canvas.itemconfig(self.canvas_img_id, image=self.photoImg)
-
+            self.updateTrackingLabel()
             utils.log_message('info', f"Displayed image: {imgPath}")
 
         except Exception as e:

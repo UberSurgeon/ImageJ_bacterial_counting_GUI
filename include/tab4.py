@@ -48,6 +48,9 @@ This guide explains the basic workflow and features of the App.
    - The selected image will be removed from your working directory.  
 5. To rotate an image:
    - Click **Rotate** to rotate the image by **90° clockwise**.
+6. Toggle image labeling:
+   - Click the **predict labeling?** checkbox if you want to crop and predict the detected label
+   - If the box is not checked, it will just crop the image reduce the processing time
 
 **Note:** Uploaded images are stored temporarily in the `raw/` folder within your project directory.
 
@@ -127,7 +130,7 @@ If you encounter bugs or have suggestions:
 
 
             # Convert markdown to HTML
-            html = markdown.markdown(md_text)
+            html = markdown.markdown(md_text, extensions=['extra', 'sane_lists', 'nl2br'])
 
             # Create an HTML frame for display
             frame = HtmlFrame(new_window,
@@ -201,7 +204,7 @@ Thank you for using this application.
 
             # Render markdown into HTML
 
-            html = markdown.markdown(md_text)
+            html = markdown.markdown(md_text, extensions=['extra', 'sane_lists', 'nl2br'])
             frame = HtmlFrame(
                 new_window,
                 horizontal_scrollbar="auto",

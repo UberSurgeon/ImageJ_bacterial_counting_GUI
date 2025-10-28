@@ -66,8 +66,9 @@ class Prelaunch(tk.Toplevel):
         if self.setting['launch'] == 0:
             utils.log_message('info', f"first time")
         elif self.setting['launch'] == 1:
+            utils.log_message('info', f"not first time (launch is 1)")
             self._exit()
-            utils.log_message('info', f"not first time")
+            
 
         # Display current JAVA_HOME and Fiji directories
         self.JHLb = tk.Label(self, text=f'JAVA_HOME={self.setting["JAVA_HOME"]}')

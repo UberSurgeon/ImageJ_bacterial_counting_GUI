@@ -80,8 +80,16 @@ class Tab1_1(tk.Frame):
         self.confidenceLabel.grid(row=5, column=0, sticky=tk.NSEW)
 
         # self.displayImage()
+        self.keeptrack = tk.Label(self, text='X/X')
+        self.keeptrack.grid(row=5, column=1, sticky=tk.NSEW)
 
         utils.log_message('info', "Tab1_1 initialized successfully")
+        
+    def updateTrackingLabel(self):
+        if self.img_dict_list:
+            self.keeptrack.config(text=f"{self.img_index + 1}/{len(self.img_dict_list)}")
+        else:
+            self.keeptrack.config(text="X/X")
 
     def updateImage(self, img_dict_list):
         """Refresh image list and display current image"""
@@ -216,6 +224,7 @@ class Tab1_1(tk.Frame):
     def displayImage(self):
         """Display image on canvas"""
         if not self.img_dict_list:
+            self.updateTrackingLabel()
             self.img_canvas.delete(self.canvas_img_id)
             self.img_canvas.delete(self.canvas_label_id)
             self.canvas_img_id = None
@@ -262,6 +271,8 @@ class Tab1_1(tk.Frame):
             else:
                 self.img_canvas.itemconfig(self.canvas_img_id, image=self.photoImg)
                 self.label_canvas.itemconfig(self.label_canvas_id, image=self.photoLabel)
+                
+            self.updateTrackingLabel()
 
             utils.log_message('info', f"Displayed image: {imgPath}")
 

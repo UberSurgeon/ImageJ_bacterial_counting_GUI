@@ -7,18 +7,19 @@ import os
 import re
 from pathlib import Path
 from typing import List, Dict
+import time
 
 cropping = LoadingWindow("cropping...", spinner=True)
 labeling = LoadingWindow("reading Label...", spinner=True)
 
-def preprocess(path: str, outPath: str) -> List[Dict[str, str]]:
-    cropping.start()
-    out = cropFromYolo(path, outPath)
-    cropping.stop()
-
+def preprocess(path: str, outPath: str, labeling_toggle: int) -> List[Dict[str, str]]:
     utils.log_message('info', f'cropping in -> {path}')
     try:
+        cropping.start()
+        start = time.time()
         out = cropFromYolo(path, outPath)
+        print(f'time taken to crop {time.time() - start}')
+        cropping.stop()
     except Exception as e:
         utils.errorMsg('preprocess', f'error -> {e}')
 
@@ -65,31 +66,44 @@ def preprocess(path: str, outPath: str) -> List[Dict[str, str]]:
         return result
 
     pairs = pair_dish_label(dishList, labelList)
-    
+
     utils.log_message('info', f'pair in -> {pairs}')
 
     label_paths = [Path(p["label_path"]) for p in pairs if p["label_path"]]
 
-    utils.log_message('info', f'start predicting label in -> {label_paths}')
-    try:
-        labeling.start()
-        preds = predict_labels(label_paths)
-        labeling.stop()
-    except Exception as e:
-        utils.errorMsg('preprocess', f'predict_labels-error -> {e}')
- 
-    by_name = {os.path.basename(p["image"]): p for p in preds}
-
     enriched = []
-    for item in pairs:
-        lp = os.path.basename(item["label_path"]) if item["label_path"] else ""
-        r = by_name.get(lp, {"prediction": "", "confidence": 0.0})
-        enriched.append({
-            **item,
-            "prediction": r["prediction"],
-            "confidence": r["confidence"],
-        })
-    return enriched
+    if (labeling_toggle == 1):
+        utils.log_message('info', f'start predicting label in -> {label_paths}')
+        try:
+            labeling.start()
+            start = time.time()
+            preds = predict_labels(label_paths)
+            print(f'time taken to label {time.time() - start}')
+            labeling.stop()
+        except Exception as e:
+            utils.errorMsg('preprocess', f'predict_labels-error -> {e}')
+
+        by_name = {os.path.basename(p["image"]): p for p in preds}
+        for item in pairs:
+            lp = os.path.basename(item["label_path"]) if item["label_path"] else ""
+            r = by_name.get(lp, {"prediction": "", "confidence": 0.0})
+            enriched.append({
+                **item,
+                "prediction": r["prediction"],
+                "confidence": r["confidence"],
+            })
+        return enriched
+    else:
+        utils.log_message('info', 'user dont want to predict label')
+        # fill prediction with "" and confidence with 0.0
+        for item in pairs:
+            enriched.append({
+                **item,
+                "prediction": "",
+                "confidence": 0.0,
+            })
+        return enriched
+
 
 if __name__ == "__main__":
     demo = preprocess("./preprocess/E1", "out")

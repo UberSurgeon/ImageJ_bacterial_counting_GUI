@@ -87,9 +87,17 @@ class Tab2(tk.Frame):
 
         self.right_frame.grid_rowconfigure(1, weight=1)
         self.right_frame.grid_columnconfigure(0, weight=1)
-        
+
+        self.keeptrack = tk.Label(self, text='X/X')
+        self.keeptrack.grid(row=5, column=1, sticky=tk.NSEW)
 
         utils.log_message('info', "Tab2 initialized successfully")
+
+    def updateTrackingLabel(self):
+        if self.img_list:
+            self.keeptrack.config(text=f"{self.img_index + 1}/{len(self.img_list)}")
+        else:
+            self.keeptrack.config(text="X/X")
 
     def getRawImage(self):
         """Load raw images from directory and display them."""
@@ -182,6 +190,7 @@ class Tab2(tk.Frame):
     def displayImage(self):
         """Display the current image and metadata."""
         try:
+            self.updateTrackingLabel()
             dst = utils.getDst(self.save_Dir, self.temp_dir, self.mode)
             self.img_list = [os.path.normpath(os.path.join(dst, f)) for f in os.listdir(dst)]
             if not self.img_list:
@@ -213,6 +222,8 @@ class Tab2(tk.Frame):
             self.text = "\n".join(f"{k}: {v}" for k, v in self.img_metadata[self.img_index].items())
             self.text_box.insert(tk.END, self.text)
             self.text_box.config(state='disabled')
+            
+            self.updateTrackingLabel()
 
             utils.log_message('info', f"Displayed image: {imgPath}")
         except Exception as e:
