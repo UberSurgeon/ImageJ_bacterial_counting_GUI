@@ -6,6 +6,8 @@ import os
 from typing import Literal
 from PIL import Image
 import include.utils as utils 
+from preprocess.yolov7.detect import run_detection
+import shutil
 
 
 def cropFromYolo(images_dir: str | os.PathLike, out_root: str | os.PathLike) -> str:
@@ -75,18 +77,23 @@ def cropFromYolo(images_dir: str | os.PathLike, out_root: str | os.PathLike) -> 
     def sort_lr(idx, boxes): return sorted(idx, key=lambda i: cx(boxes[i]))
 
     def detect(imgs_dir: Path, name: str = "auto_pred") -> Path:
+        # print(">>> detect() called <<<")
         imgs = str(imgs_dir.resolve())
-        project = str(Path(getDst('Y7_PROJECT')).resolve())
-        cmd = [
-            sys.executable, str(Path(getDst('Y7_DETECT')).resolve()),
-            "--weights", str(Path(getDst('Y7_WEIGHTS')).resolve()),
-            "--source", imgs,
-            "--img-size", str(IMG_SIZE),
-            "--conf", str(MIN_CONF),
-            "--save-txt", "--save-conf",
-            "--project", project,
-            "--name", name,]
-        subprocess.run(cmd, check=True)
+        # project = str(Path(getDst('Y7_PROJECT')).resolve())
+        project_path = Path(getDst('Y7_PROJECT')).resolve()
+        for old_run in project_path.glob(f"{name}*"):
+            shutil.rmtree(old_run, ignore_errors=True) 
+        project = str(project_path)
+        run_detection(
+            weights=Path(getDst('Y7_WEIGHTS')).resolve(),
+            source=str(imgs),
+            img_size=IMG_SIZE,
+            conf_thres=MIN_CONF,
+            save_txt=True,
+            save_conf=True,
+            project=project,
+            name=name,
+        )
         base = Path(project)
         runs = sorted(base.glob(f"{name}*"), key=lambda p: p.stat().st_mtime, reverse=True)
         for r in runs:
@@ -96,6 +103,7 @@ def cropFromYolo(images_dir: str | os.PathLike, out_root: str | os.PathLike) -> 
         return Path(project) / name / "labels"
 
     imgs = Path(images_dir).expanduser().resolve()
+    utils.log_message('debug', f"for croping in folder {imgs} there are {os.listdir(images_dir)}")
     if not imgs.exists():
         raise SystemExit(f"images folder not found: {imgs}")
 
@@ -203,8 +211,6 @@ def cropFromYolo(images_dir: str | os.PathLike, out_root: str | os.PathLike) -> 
                     if mn <= cx(lb) <= mx and (med == 0 or (R1 * med <= (lb[2] - lb[0]) <= R2 * med))
                 ]
             _save_crops(im, W, H, stem, dishes, labels)
-
-    utils.log_message('info', f'done cropping save at {out}')
 
     return str(out)
 

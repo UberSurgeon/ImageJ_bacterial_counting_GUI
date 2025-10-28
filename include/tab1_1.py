@@ -93,9 +93,14 @@ class Tab1_1(tk.Frame):
 
     def updateImage(self, img_dict_list):
         """Refresh image list and display current image"""
-        self.img_dict_list = img_dict_list
+        if not img_dict_list:
+            self.img_dict_list = []
+        else:
+            self.img_dict_list = img_dict_list
+        # else:
+        #     self.img_dict_list.append(img_dict_list)
         self.img_index = 0
-        print(self.img_dict_list)
+        # print(self.img_dict_list)
         self.displayImage()
         self.on_img_change()
         # if self.save_Dir is not None:
@@ -150,6 +155,8 @@ class Tab1_1(tk.Frame):
     def on_img_change(self):
         self.nameText.delete("1.0", tk.END)
         #test
+        if not self.img_dict_list:
+            return
         if self.img_dict_list[self.img_index]['name'] == "":
             text = self.img_dict_list[self.img_index]['prediction']
             self.img_dict_list[self.img_index]['name'] = self.img_dict_list[self.img_index]['prediction']
@@ -225,14 +232,14 @@ class Tab1_1(tk.Frame):
         """Display image on canvas"""
         if not self.img_dict_list:
             self.updateTrackingLabel()
-            self.img_canvas.delete(self.canvas_img_id)
-            self.img_canvas.delete(self.canvas_label_id)
+            self.img_canvas.delete("all")
+            self.label_canvas.delete("all")
             self.canvas_img_id = None
             self.canvas_label_id = None
             self.init_text_id = self.img_canvas.create_text(
                 100, 50, text="No Image Selected", fill="black", font=('Helvetica 15 bold')
             )
-            self.init_text_id2 = self.img_canvas.create_text(
+            self.init_text_id2 = self.label_canvas.create_text(
                 100, 50, text="No Image Selected", fill="black", font=('Helvetica 15 bold')
             )
             utils.log_message('debug', "No image selected — showing default text")
@@ -271,7 +278,7 @@ class Tab1_1(tk.Frame):
             else:
                 self.img_canvas.itemconfig(self.canvas_img_id, image=self.photoImg)
                 self.label_canvas.itemconfig(self.label_canvas_id, image=self.photoLabel)
-                
+
             self.updateTrackingLabel()
 
             utils.log_message('info', f"Displayed image: {imgPath}")

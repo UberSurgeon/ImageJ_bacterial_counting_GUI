@@ -177,6 +177,7 @@ class Tab1(tk.Frame):
 
         dst = utils.getDst(self.save_Dir, self.temp_dir, 'raw')
         out = utils.getDst(self.save_Dir, self.temp_dir, 'crop')
+        # clearing prv
         utils.log_message('info', f'cropimg dst = {dst}')
         utils.log_message('info', f'croping out = {out}')
         try:

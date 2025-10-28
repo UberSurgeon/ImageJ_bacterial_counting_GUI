@@ -71,7 +71,7 @@ def preprocess(path: str, outPath: str, labeling_toggle: int) -> List[Dict[str, 
 
     label_paths = [Path(p["label_path"]) for p in pairs if p["label_path"]]
 
-    enriched = []
+    
     if (labeling_toggle == 1):
         utils.log_message('info', f'start predicting label in -> {label_paths}')
         try:
@@ -84,6 +84,7 @@ def preprocess(path: str, outPath: str, labeling_toggle: int) -> List[Dict[str, 
             utils.errorMsg('preprocess', f'predict_labels-error -> {e}')
 
         by_name = {os.path.basename(p["image"]): p for p in preds}
+        enriched = []
         for item in pairs:
             lp = os.path.basename(item["label_path"]) if item["label_path"] else ""
             r = by_name.get(lp, {"prediction": "", "confidence": 0.0})
@@ -96,6 +97,7 @@ def preprocess(path: str, outPath: str, labeling_toggle: int) -> List[Dict[str, 
     else:
         utils.log_message('info', 'user dont want to predict label')
         # fill prediction with "" and confidence with 0.0
+        enriched = []
         for item in pairs:
             enriched.append({
                 **item,

@@ -10,7 +10,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s',
     filename='app.log',
-    filemode='w'
+    filemode='a'
 )
 
 def log_message(level: Literal['debug', 'info', 'warning', 'error', 'critical'], message):

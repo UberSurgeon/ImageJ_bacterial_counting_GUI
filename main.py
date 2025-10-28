@@ -228,12 +228,17 @@ class Windows(tk.Toplevel):
         loader.stop()
         self.lift()
 
-
     def window_exit(self):
         # Handle window close request
         close = messagebox.askyesno("Exit?", "Are you sure you want to exit? Any unsaved project will be lost")
         if close:
             try:
+                if getattr(sys, 'frozen', False):
+                    BASE_DIR = sys._MEIPASS
+                else:
+                    BASE_DIR = sys.path[0]
+                x = os.path.join('preprocess', 'yolov7', 'runs', 'detect')
+
                 self.setting["launch"] = 0
                 # Save updated settings to file
                 with open(utils.settingPath(), 'w') as file:
@@ -241,6 +246,7 @@ class Windows(tk.Toplevel):
                 utils.log_message('debug', "Settings updated and saved successfully")
                 utils.log_message('info', "Updated launch: 0")
                 self.force_rmtree(self.temp_dir)
+                self.force_rmtree(os.path.join(BASE_DIR, x))
                 self.imageJ.exit()
                 # shutil.rmtree(self.temp_dir, ignore_errors=True)
                 self.destroy()
@@ -284,7 +290,8 @@ class Windows(tk.Toplevel):
         os.makedirs(os.path.join(self.temp_dir, "raw"), exist_ok=True)
         os.makedirs(os.path.join(self.temp_dir, "imageJ", "data"), exist_ok=True)
         os.makedirs(os.path.join(self.temp_dir, "imageJ", "result"), exist_ok=True)
-        os.makedirs(os.path.join(self.temp_dir, "crop", ), exist_ok=True)
+        os.makedirs(os.path.join(self.temp_dir, "crop", "raw", "dishes"), exist_ok=True)
+        os.makedirs(os.path.join(self.temp_dir, "crop", "raw", "labels"), exist_ok=True)
         # os.makedirs(os.path.join(self.temp_dir, "crop", "labels"), exist_ok=True)
         utils.log_message('debug', f"Temporary directories created at {self.temp_dir}")
 
@@ -329,6 +336,7 @@ class Windows(tk.Toplevel):
             self.wm_title('Untitled_Project')
             self.update_save()
             self.update_temp()
+            self.update_img_dict_list([])
             utils.log_message('info', "new empty project")
             self.change_tab(0)
 
@@ -349,7 +357,8 @@ class Windows(tk.Toplevel):
 
     def update_img_dict_list(self, img_dict_list):
         # print(img_dict_list)
-        self.tab1_1.updateImage(img_dict_list)     
+        utils.log_message('debug', f"UPDATE_IMG_DICT_LIST CONTAIN >> {img_dict_list}")
+        self.tab1_1.updateImage(img_dict_list)    
         
     def change_tab(self, id):
         self.notebook.select(id)

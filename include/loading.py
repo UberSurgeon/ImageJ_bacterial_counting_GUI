@@ -55,9 +55,15 @@ class LoadingWindow:
         self.process.start()
 
     def stop(self):
-        if self.process and self.process.is_alive():
-            self._run_flag.value = 0
-            self.process.join(timeout=2)
+        # if self.process and self.process.is_alive():
+        #     self._run_flag.value = 0
+        #     self.process.join(timeout=2)
+        #     self.process.close()
+        #     self.process = None
+        if self.process is not None:
+            if self.process.is_alive():
+                self.process.terminate()
+                self.process.join()
             self.process.close()
             self.process = None
 
