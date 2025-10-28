@@ -63,11 +63,11 @@ class Prelaunch(tk.Toplevel):
         with open(utils.settingPath(), 'r') as file:
             self.setting = json.load(file)
         utils.log_message('debug', f"Loaded settings: {self.setting}")
-        if self.setting['launch'] == 0:
-            utils.log_message('info', f"first time")
-        elif self.setting['launch'] == 1:
-            utils.log_message('info', f"not first time (launch is 1)")
-            self._exit()
+        # if self.setting['launch'] == 0:
+        #     utils.log_message('info', f"first time")
+        # elif self.setting['launch'] == 1:
+        #     utils.log_message('info', f"not first time (launch is 1)")
+        #     self._exit()
             
 
         # Display current JAVA_HOME and Fiji directories
