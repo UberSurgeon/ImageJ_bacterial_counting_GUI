@@ -71,7 +71,7 @@ class ImageJ():
             
             # clear outer bg
             # roi = OvalRoi(ep/2, ep/2, (width-ep), (height-(ep+10)))
-            roi = OvalRoi(ep/2, ep/2 + 5, (width-ep-10), (height-(ep+10)))
+            roi = OvalRoi(ep/2 + 40, ep/2 + 45, (width-ep-70), (height-(ep+70)))
             imp.setRoi(roi)
             self.ij.IJ.setBackgroundColor(255, 255, 255)
             self.ij.IJ.run(imp, "Clear Outside", "")

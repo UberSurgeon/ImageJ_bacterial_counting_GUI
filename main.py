@@ -197,12 +197,6 @@ class Windows(tk.Toplevel):
 
         # Create temporary directories
         self.setFolder()
-        # self.temp_dir = tempfile.mkdtemp(prefix="temp_")
-        # os.makedirs(os.path.join(self.temp_dir, "raw"), exist_ok=True)
-        # os.makedirs(os.path.join(self.temp_dir, "imageJ", "data"), exist_ok=True)
-        # os.makedirs(os.path.join(self.temp_dir, "imageJ", "result"), exist_ok=True)
-        # utils.log_message('debug', f"Temporary directories created at {self.temp_dir}")
-
         self.save_Dir = None
         self.project_Name = None
 

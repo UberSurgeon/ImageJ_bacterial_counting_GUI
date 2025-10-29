@@ -1,5 +1,6 @@
 from preprocess.crop_from_yolo import cropFromYolo
 from preprocess.minicpm_predict import predict_labels
+from preprocess.resize_crop import normSize
 import include.utils as utils
 from include.loading import LoadingWindow
 
@@ -25,6 +26,10 @@ def preprocess(path: str, outPath: str, labeling_toggle: int) -> List[Dict[str, 
 
     dishPath = os.path.join(out, 'dishes')
     labelPath = os.path.join(out, 'labels')
+
+    normSize(dishPath)
+    utils.log_message('debug', 'Normalizing all image to a certian size')
+
 
     dishList = []
     labelList = []
