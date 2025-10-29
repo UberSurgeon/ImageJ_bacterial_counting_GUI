@@ -25,7 +25,6 @@ import os
 import shutil
 from include.tab1 import Tab1
 from include.tab2 import Tab2
-from include.tab3 import Tab3
 from include.tab4 import Tab4
 from include.tab1_1 import Tab1_1
 from include.ijClass import ImageJ
@@ -215,13 +214,11 @@ class Windows(tk.Toplevel):
         self.notebook = ttk.Notebook(self)
         self.tab2 = Tab2(self.notebook, imageJ=self.imageJ, setting=self.setting, temp_dir=self.temp_dir)
         self.tab1 = Tab1(self.notebook, save_Dir=self.save_Dir, temp_dir=self.temp_dir, windows=self)
-        self.tab3 = Tab3(self.notebook)
         self.tab4 = Tab4(self.notebook)
         self.tab1_1 = Tab1_1(self.notebook, save_Dir=self.save_Dir, temp_dir=self.temp_dir, windows=self)
         self.notebook.add(self.tab1, text="Upload Image")
         self.notebook.add(self.tab1_1, text="rename")
         self.notebook.add(self.tab2, text="Count")
-        self.notebook.add(self.tab3, text="Table Manager")
         self.notebook.add(self.tab4, text="Info/ Misc")
         self.notebook.grid(row=0, column=0, sticky=tk.NSEW)
         utils.log_message('info', "Main window UI initialized")
