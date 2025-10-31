@@ -71,9 +71,10 @@ class SaveDialog(ctk.CTkToplevel):
         path = os.path.join(self.path_entry.get(), self.project_name_entry.get())
         try:
             os.mkdir(path)
-            utils.log_message('debug', f'saving-created a dir named {self.project_name_entry} at {self.path_entry.get()}')
+            utils.log_message('debug', f'saving-created a dir named {self.project_name_entry.get()} at {self.path_entry.get()}')
         except FileExistsError:
             utils.log_message('error', 'saving-dir already exists')
+            utils.infoMsg('project name', f'project with the same name {self.project_name_entry.get()} already exist')
             return
             
         self.result = path

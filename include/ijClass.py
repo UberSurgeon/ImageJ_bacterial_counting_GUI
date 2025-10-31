@@ -199,10 +199,6 @@ class ImageJ():
                 results.append(result)
 
             # self.ij.IJ.run("Close", "Results")
-
-            dst = os.path.join(dataDir, "data.json")
-            with open(dst, 'w', encoding='utf-8') as file:
-                json.dump(results, file, ensure_ascii=False, indent=4)
             
             self.ij.IJ.run("Close", "Results")
             print(results)

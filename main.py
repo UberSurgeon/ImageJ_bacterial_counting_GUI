@@ -393,13 +393,28 @@ class Windows(ctk.CTkToplevel):
         self.save_Dir = save_path
         shutil.copytree(self.temp_dir, self.save_Dir, dirs_exist_ok=True)
         self.wm_title(self.save_Dir)
+        
+        # Update paths in data.json to be absolute paths in the new project directory
+        data_json_path = os.path.join(self.save_Dir, 'imageJ', 'data', 'data.json')
+        if os.path.exists(data_json_path):
+            with open(data_json_path, 'r+') as f:
+                data = json.load(f)
+                for item in data:
+                    for key in ['img_path', 'label_path', 'count_path']:
+                        if key in item and item[key] and self.temp_dir in item[key]:
+                            relative_path = os.path.relpath(item[key], self.temp_dir)
+                            item[key] = os.path.join(self.save_Dir, relative_path)
+                
+                f.seek(0)  # Go to the beginning of the file
+                json.dump(data, f, indent=4)
+                f.truncate() # Remove old content if new content is shorter
+
         self.update_save()
         utils.log_message('info', f"Project saved to {self.save_Dir}")
 
     def open(self):
         # Open existing project directory
         prv_save = self.save_Dir
-        # if self.save_Dir is None:
         self.save_Dir = filedialog.askdirectory(title='Select the project Directory')
         if self.save_Dir == '' and prv_save is None:
             self.save_Dir = None
@@ -408,11 +423,8 @@ class Windows(ctk.CTkToplevel):
         else:
             self.wm_title(self.save_Dir)
             self.update_save()
-            utils.log_message('info', f"Opened project from {self.save_Dir}")
+            utils.log_message('info', f"Opened project from {self.save_Dir}")            
             self.change_tab('Count')
-        # else:
-        #     utils.infoMsg('Information', 'project already been open/ created')
-        #     utils.log_message('warning', "Open attempted but project already open")
             
     def new(self):
         if messagebox.askokcancel(title='new', message='Do you want to start a new project?'):
@@ -429,7 +441,14 @@ class Windows(ctk.CTkToplevel):
     def update_save(self):
         self.tab1.update_save_Dir(self.save_Dir)
         self.tab2.update_save_Dir(self.save_Dir)
+        data_dir = utils.getDst(self.save_Dir, self.temp_dir, 'data')
+        json_path = os.path.join(data_dir, 'data.json')
         
+        if os.path.exists(json_path):
+            with open(json_path, 'r') as data_file:
+                loaded_data = json.load(data_file)
+                self.update_img_dict_list(loaded_data)
+                self.tab2.updateTable(loaded_data)
 
     def update_temp(self):
         self.tab1.update_temp_Dir(self.temp_dir)

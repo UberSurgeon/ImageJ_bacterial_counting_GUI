@@ -20,5 +20,5 @@
     },
     "env": "test tube",
     "JAVA_HOME": "C:/Program Files/Java/jdk-21",
-    "launch": 1
+    "launch": 0
 }
