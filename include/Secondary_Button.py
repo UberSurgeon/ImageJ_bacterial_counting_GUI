@@ -27,4 +27,7 @@ class SecondaryButton(ctk.CTkButton):
 
     def _on_leave(self,event=None):
         self.configure(text_color="#003366",fg_color="white")
+    
+    def change_text(self, new_text):
+        self.configure(text=new_text)
 

@@ -29,6 +29,7 @@ from include.tab4 import Tab4
 from include.tab1_1 import Tab1_1
 from include.ijClass import ImageJ
 from include.loading import LoadingWindow
+from include.SaveDialog import SaveDialog
 import include.utils as utils
 import json
 import tempfile
@@ -225,6 +226,7 @@ class Prelaunch(ctk.CTkToplevel):
 
 
 
+
 class Windows(ctk.CTkToplevel):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -376,19 +378,23 @@ class Windows(ctk.CTkToplevel):
         utils.log_message('debug', f"Temporary directories created at {self.temp_dir}")
 
     def save(self):
-        # Save project data
-        # if self.save_Dir is None:
-        self.save_Dir = filedialog.askdirectory(title='Create a new project Directory')
-        if self.save_Dir == '':
+        dialog = SaveDialog(self, title="Save Project As", initial_dir=os.getcwd())
+        self.wait_window(dialog)
+        save_path = dialog.result
+
+        if not save_path:
             self.save_Dir = None
+            utils.log_message('info', "Save operation cancelled by user.")
             return
+
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+
+        self.save_Dir = save_path
         shutil.copytree(self.temp_dir, self.save_Dir, dirs_exist_ok=True)
         self.wm_title(self.save_Dir)
         self.update_save()
         utils.log_message('info', f"Project saved to {self.save_Dir}")
-        # else:
-        #     utils.infoMsg('Information', 'project already saved')
-        #     utils.log_message('warning', "Save attempted but project already saved")
 
     def open(self):
         # Open existing project directory
@@ -438,8 +444,9 @@ class Windows(ctk.CTkToplevel):
     def update_img_dict_list(self, img_dict_list):
         # print(img_dict_list)
         utils.log_message('debug', f"UPDATE_IMG_DICT_LIST CONTAIN >> {img_dict_list}")
-        self.tab1_1.updateImage(img_dict_list)    
-        
+        self.tab1_1.updateImage(img_dict_list)
+        self.tab2.updateImage(img_dict_list)
+
     def change_tab(
             self,
             name: Literal[

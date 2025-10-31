@@ -309,6 +309,8 @@ class Tab1(ctk.CTkFrame):
         new_window.columnconfigure(0, weight=1)
         canvas = CanvasImage(new_window, imgPath)
         canvas.grid(row=0, column=0)
+        new_window.grab_set()
+        new_window.focus_set()
         utils.log_message('info', f"Opened new window for image: {imgPath}")
 
     def update_save_Dir(self, save_Dir):
