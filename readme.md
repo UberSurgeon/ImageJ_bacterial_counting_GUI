@@ -32,16 +32,34 @@ Download and install **Java 21**:
 
 ### 2. Install Maven
 
-Install **Maven 3.9.9**:
-[https://dlcdn.apache.org/maven/mvnd/1.0.3/maven-mvnd-1.0.3-windows-amd64.zip](https://dlcdn.apache.org/maven/mvnd/1.0.3/maven-mvnd-1.0.3-windows-amd64.zip)
+2.1 install chocolaty
 
-Extract the ZIP file to a location such as:
+- [youtube guide](https://youtu.be/lJVZiXysA_0?si=zWTnDnrw5qKVpNUC&t=58)
+
+- [text guide](https://docs.chocolatey.org/en-us/choco/setup/)
+
+or
+
+- open cmd.exe as administrator and paste the following command
+```
+@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+```
+
+2.2 Install Maven
+
+after the installation is finished (using any method above)
+
+close and reopen cmd.exe as administrator and paste the following command
 
 ```
-C:\ProgramData\chocolatey\lib\maven\
+choco install maven
 ```
 
-Then add `maven\bin` to your **PATH** environment variable.
+you can check if it's install correctly, by reopening cmd.exe and type
+
+```
+mvn --v
+```
 
 ---
 
