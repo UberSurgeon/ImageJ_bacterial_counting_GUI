@@ -4,6 +4,7 @@ from preprocess.resize_crop import normSize
 import include.utils as utils
 from include.loading import LoadingWindow
 
+
 import os
 import re
 from pathlib import Path
