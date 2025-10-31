@@ -105,7 +105,7 @@ def set_icon(parent, ico_name='icon.ico'):
         
 def best_fit(oldsize, picsize):
     new_width, new_height = picsize
-    old_width, old_height = oldsize
+    old_width, old_height = oldsize 
     if new_width * old_height < new_height * old_width:
         # reduce height to keep original aspect ratio
         new_height = max(1, old_height * new_width // old_width)
@@ -114,9 +114,8 @@ def best_fit(oldsize, picsize):
         new_width = max(1, old_width * new_height // old_height)
     
     log_message(
-        'debug',
-        f'Change thumbnail size {
-            old_width, old_height} -> {
-                new_width, new_height}')
-    
+    'debug',
+    f'Change thumbnail size {(old_width, old_height)} -> {(new_width, new_height)}'
+    )
+
     return (new_width, new_height)

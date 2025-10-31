@@ -8,22 +8,55 @@ from include.ijClass import ImageJ
 from typing import Literal
 import json
 import include.utils as utils
+import customtkinter as ctk
+from include.Secondary_Button import SecondaryButton
 
 
-class Tab2(tk.Frame):
+APP_BG= "#f1f8ff"
+
+TEXT_COLOR = "#003366"
+
+class Tab2(ctk.CTkFrame):
     def __init__(self, parent, imageJ: ImageJ, setting, temp_dir):
         super().__init__(parent)
+        self.configure(fg_color=APP_BG)
+
         self.temp_dir = temp_dir
         self.save_Dir = None
         self.setting = setting
         self.settingPath = utils.settingPath()
         self.imageJ = imageJ
 
-        # Left and right frames
-        self.left_frame = tk.Frame(self, width=200, height=400)
-        self.left_frame.grid(row=0, column=0)
-        self.right_frame = tk.Frame(self, width=200, height=400)
-        self.right_frame.grid(row=0, column=1)
+
+        # main container
+        self.main_container = ctk.CTkFrame(self,fg_color=APP_BG)
+        self.main_container.grid_columnconfigure(0, weight=1, uniform="equal")
+        self.main_container.grid_columnconfigure(1, weight=1, uniform="equal")
+        self.main_container.grid_rowconfigure(0, weight=0)
+        self.main_container.grid_rowconfigure(1, weight=1)
+        self.main_container.grid_rowconfigure(2, weight=1)
+        self.main_container.pack(fill="both", expand=True)
+
+        # Left frame layout
+        self.left_frame = ctk.CTkFrame(self.main_container, fg_color=APP_BG)
+        self.left_frame.grid(row=1, column=0, sticky="nsew")
+        self.left_frame.grid_rowconfigure(0, weight=1)   # image area 
+        self.left_frame.grid_rowconfigure(1, weight=0)   # navigation buttons
+        self.left_frame.grid_rowconfigure(2, weight=0)   # view original
+        self.left_frame.grid_rowconfigure(3, weight=0)   # count colonies
+        self.left_frame.grid_columnconfigure(0, weight=1)
+
+        self.right_frame = ctk.CTkFrame(self.main_container, fg_color="#f1f8ff")
+        self.right_frame.grid(row=1, column=1, sticky="nsew")
+        self.right_frame.grid_rowconfigure(0, weight=1)
+        self.right_frame.grid_columnconfigure(0, weight=1)
+
+
+        # Button frame (centered)
+        self.button_frame = ctk.CTkFrame(self.left_frame, fg_color="#f1f8ff")
+        #self.button_frame.grid(row=1, column=0, columnspan=3, pady=10, sticky="n")
+        self.button_frame.grid(row=1, column=0, pady=(0, 10))
+        self.button_frame.grid_columnconfigure((0, 1, 2), weight=1)
 
         # Image handling variables
         self.img_list = []
@@ -32,36 +65,57 @@ class Tab2(tk.Frame):
         self.canvas_img_id = None
         self.mode: Literal['count', 'dish'] = 'dish'
         self.results = None
+        self.init_text_id = None
 
-        # Canvas for displaying thumbnails
-        self.img_canvas = tk.Canvas(self.left_frame, width=200, height=200)
-        self.init_text_id = self.img_canvas.create_text(
-            100, 50,
-            text="No Image Selected",
-            fill="black", font=('Helvetica 15 bold')
-        )
-        self.img_canvas.grid(row=0, column=0, columnspan=3)
+        self.img_canvas = tk.Canvas(self.left_frame,bg=APP_BG)
+
+        self.img_canvas.grid(row=0, column=0,padx=10, pady=10)
+        #self.img_canvas.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.img_canvas.bind("<Configure>", lambda e: self.displayImage())
         self.img_canvas.bind("<Button-1>", self.callback)
 
-        # Navigation buttons
-        tk.Button(self.left_frame, text="<<", command=self.img_idx_back).grid(row=1, column=0)
-        tk.Button(self.left_frame, text=">>", command=self.img_idx_fwd).grid(row=1, column=1)
-        
-        self.bind_all("<Left>", lambda event: self.img_idx_back())
-        self.bind_all("<Right>", lambda event: self.img_idx_fwd())
+        # Image Navigation buttons
+        SecondaryButton(self.button_frame, "<<", self.img_idx_back).grid(row=0, column=0, sticky="e", padx=5)
+        SecondaryButton(self.button_frame, ">>", self.img_idx_fwd).grid(row=0, column=2, sticky="w", padx=5)
 
-        # Toolbar with tools
-        self.tool_bar = tk.Frame(self.left_frame, width=180, height=185, bg='grey')
-        self.tool_bar.grid(row=2, column=0)
-        tk.Label(self.tool_bar, text='Tools', relief='raised').grid(row=0, column=0)
-        tk.Button(self.tool_bar, text="unchanged", command=self.getRawImage, width=10).grid(row=2, column=0, padx=5, pady=5, sticky=tk.NSEW)
-        tk.Button(self.tool_bar, text="count", command=self.askReCount, width=8).grid(row=3, column=0, padx=5, pady=5, sticky=tk.NSEW)
-        tk.Button(self.tool_bar, text=":", width=2, command=self.countSetting).grid(row=3, column=1, padx=5, pady=5, sticky=tk.NSEW)
+
+        # Buttons inside
+        SecondaryButton(self.left_frame, "View Original Image", self.getRawImage).grid(
+            row=2, column=0, padx=10, pady=10, sticky="ew"
+        )
+        ctk.CTkButton(self.left_frame,font=("Roboto",16,"bold") ,text="Count Colonies", command=self.askReCount,height=40,text_color="white").grid(
+            row=3, column=0, padx=10, pady=10, sticky="ew"
+        )
+        ctk.CTkButton(self.main_container, text="Settings", font=("Roboto",16),width=2, command=self.countSetting,fg_color=APP_BG,hover_color=APP_BG,text_color=TEXT_COLOR).grid(row=0, column=0, sticky="nw")
 
         # Metadata text area
-        self.text_box = tk.Text(self.right_frame, height=10, width=70)
-        self.text_box.grid(row=0, column=0, columnspan=5)
-        self.text_box.config(state='disabled')
+        self.text_box = ctk.CTkTextbox(self.right_frame,font=("Roboto", 16))
+        self.text_box.grid(row=0, column=0, columnspan=5, sticky="nsew")
+        self.text_box.configure(state='disabled')
+
+        # Table style
+        style = ttk.Style()
+
+        # General row styling
+        style.configure(
+            "Treeview",
+            background="#f1f8ff",
+            fieldbackground="#f1f8ff",
+            foreground=TEXT_COLOR,
+            rowheight=34,              
+            font=('Roboto', 14),
+            padding=(0, 6)            
+        )
+
+        # Header styling
+        style.configure(
+            "Treeview.Heading",
+            background="#82b8fe",
+            foreground=TEXT_COLOR,
+            font=('Roboto', 12, 'bold'),
+            padding=(0, 6)
+        )
+
 
         # Table for image data
         self.table = ttk.Treeview(self.right_frame)
@@ -88,16 +142,22 @@ class Tab2(tk.Frame):
         self.right_frame.grid_rowconfigure(1, weight=1)
         self.right_frame.grid_columnconfigure(0, weight=1)
 
-        self.keeptrack = tk.Label(self, text='X/X')
-        self.keeptrack.grid(row=5, column=1, sticky=tk.NSEW)
+        self.keeptrack = ctk.CTkLabel(self.button_frame, text='X/X')
+        self.keeptrack.grid(row=0, column=1, pady=5, padx=5)
 
         utils.log_message('info', "Tab2 initialized successfully")
 
+    def clear_placeholder(self):
+        self.img_canvas.delete("all")
+        self.canvas_img_id = None
+        self.init_text_id = None
+    
+
     def updateTrackingLabel(self):
         if self.img_list:
-            self.keeptrack.config(text=f"{self.img_index + 1}/{len(self.img_list)}")
+            self.keeptrack.configure(text=f"{self.img_index + 1}/{len(self.img_list)}")
         else:
-            self.keeptrack.config(text="X/X")
+            self.keeptrack.configure(text="X/X")
 
     def getRawImage(self):
         """Load raw images from directory and display them."""
@@ -193,35 +253,57 @@ class Tab2(tk.Frame):
             self.updateTrackingLabel()
             dst = utils.getDst(self.save_Dir, self.temp_dir, self.mode)
             self.img_list = [os.path.normpath(os.path.join(dst, f)) for f in os.listdir(dst)]
+
             if not self.img_list:
-                self.img_canvas.delete(self.canvas_img_id)
-                self.canvas_img_id = None
+                self.clear_placeholder()
                 self.init_text_id = self.img_canvas.create_text(
-                    100, 50, text="No Image Selected", fill="black", font=('Helvetica 15 bold')
+                    self.img_canvas.winfo_width() / 2,
+                    self.img_canvas.winfo_height() / 2,
+                    text="No Image Selected",
+                    fill="black",
+                    font=('Helvetica 15 bold'),
+                    tags="placeholder"
                 )
                 utils.log_message('debug', "No images found — showing default message")
-                return None
+                return
+
+            # Get current canvas dimensions
+            canvas_width = self.img_canvas.winfo_width()
+            canvas_height = self.img_canvas.winfo_height()
+
+            # Calculate center coordinates
+            center_x = canvas_width / 2
+            center_y = canvas_height / 2
+
 
             self.getMetaData(self.img_list)
             imgPath = self.img_list[self.img_index]
             self.img = Image.open(imgPath)
-            picsize = 200, 200
+            picsize = canvas_height, canvas_height
             size = self.img.size
             self.img = self.img.resize(utils.best_fit(size, picsize), Image.Resampling.LANCZOS)
             self.photoImg = ImageTk.PhotoImage(self.img)
 
+            
+            # Remove "No Image Selected" text if present
+            self.img_canvas.delete(self.init_text_id)
+
+            # If first time, create image; otherwise, update position and image
             if self.canvas_img_id is None:
-                self.img_canvas.delete(self.init_text_id)
-                self.canvas_img_id = self.img_canvas.create_image(100, 100, image=self.photoImg, anchor="center")
+                self.canvas_img_id = self.img_canvas.create_image(center_x, center_y, image=self.photoImg, anchor="center")
+                self.init_text_id = None
+
             else:
+                self.img_canvas.coords(self.canvas_img_id, center_x, center_y)
                 self.img_canvas.itemconfig(self.canvas_img_id, image=self.photoImg)
 
+
             # Display metadata
-            self.text_box.config(state='normal')
+            self.text_box.configure(state='normal')
             self.text_box.delete("1.0", tk.END)
             self.text = "\n".join(f"{k}: {v}" for k, v in self.img_metadata[self.img_index].items())
             self.text_box.insert(tk.END, self.text)
-            self.text_box.config(state='disabled')
+            self.text_box.configure(state='disabled')
             
             self.updateTrackingLabel()
 
@@ -304,9 +386,9 @@ class Tab2(tk.Frame):
             self.createTable()
             self.displayImage()
             # empty meta
-            self.text_box.config(state='normal')
+            self.text_box.configure(state='normal')
             self.text_box.delete("1.0", tk.END)
-            self.text_box.config(state='disabled')
+            self.text_box.configure(state='disabled')
 
     def update_setting(self, setting):
         """Save new settings to file."""
@@ -333,9 +415,9 @@ class Tab2(tk.Frame):
 
         def show(event):
             result = opt.get()
-            lbl.config(text=result)
-            lbl_addlightness.config(text=f"addlightness = {self.setting['preset'][result]['addlightness']}")
-            lbl_prominence.config(text=f"prominence = {self.setting['preset'][result]['prominence']}")
+            lbl.configure(text=result)
+            lbl_addlightness.configure(text=f"addlightness = {self.setting['preset'][result]['addlightness']}")
+            lbl_prominence.configure(text=f"prominence = {self.setting['preset'][result]['prominence']}")
             if result == 'custom':
                 in_lightL.pack()
                 in_light.pack()
@@ -358,10 +440,10 @@ class Tab2(tk.Frame):
                 self.setting['preset'][result]['prominence'] = prom
                 in_light.delete("1.0", "end")
                 in_prom.delete("1.0", "end")
-            lbl.config(text=result)
-            check.config(text='saved*')
-            lbl_addlightness.config(text=f"addlightness = {self.setting['preset'][result]['addlightness']}")
-            lbl_prominence.config(text=f"prominence = {self.setting['preset'][result]['prominence']}")
+            lbl.configure(text=result)
+            check.configure(text='saved*')
+            lbl_addlightness.configure(text=f"addlightness = {self.setting['preset'][result]['addlightness']}")
+            lbl_prominence.configure(text=f"prominence = {self.setting['preset'][result]['prominence']}")
             self.setting["env"] = result
             self.update_setting(self.setting)
             utils.log_message('info', f"Updated counting preset: {result}")

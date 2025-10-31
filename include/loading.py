@@ -38,7 +38,7 @@ class LoadingWindow:
                 root.destroy()
                 return
             if spinner:
-                label.config(text=f"{text} {spinner_chars[idx]}")
+                label.configure(text=f"{text} {spinner_chars[idx]}")
                 idx = (idx + 1) % len(spinner_chars)
             root.after(delay, animate)
 
