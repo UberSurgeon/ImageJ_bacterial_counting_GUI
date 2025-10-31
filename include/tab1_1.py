@@ -371,7 +371,7 @@ class Tab1_1(ctk.CTkFrame):
         label_height = self.label_canvas.winfo_height()
 
         # Retry if canvas sizes not ready
-        if (canvas_width == 0 or canvas_height == 0 or label_width == 0 or label_height == 0):
+        if (canvas_width < 100 or canvas_height < 100 or label_width < 100 or label_height < 100):
             self.after(100, self.displayImage)
             return
 
@@ -387,16 +387,24 @@ class Tab1_1(ctk.CTkFrame):
         )
 
         # Display label if available
-        if "label_path" in img_dict and img_dict["label_path"]:
-            self.label = Image.open(img_dict["label_path"])
-            self.label = self.label.resize(
-                utils.best_fit(self.label.size, (int(label_width * 0.8), int(label_height * 0.8))),
-                Image.Resampling.LANCZOS
-            )
-            self.tk_label = ImageTk.PhotoImage(self.label)
-            self.canvas_label_id = self.label_canvas.create_image(
-                label_width / 2, label_height / 2, image=self.tk_label
-            )
+        try:
+            if "label_path" in img_dict:
+                if img_dict["label_path"] == "":
+                    self.label = Image.open(utils.imgPath('300px-Debugempty.png'))
+                else:
+                    self.label = Image.open(img_dict["label_path"])
+                self.label = self.label.resize(
+                    utils.best_fit(self.label.size, (max(int(label_width * 0.8), 1), max(int(label_height * 0.8), 1))),
+                    Image.Resampling.LANCZOS
+                )
+                self.tk_label = ImageTk.PhotoImage(self.label)
+                self.canvas_label_id = self.label_canvas.create_image(
+                    label_width / 2, label_height / 2, image=self.tk_label
+                )
+        except Exception as e:
+            print(f'width {int(label_width * 0.8)}')
+            print(f'height {int(label_height * 0.8)}')
+            print(f'exception  {e}')
 
         # Update filename + tracking info
         self.fileNameLabel.configure(text=os.path.basename(img_dict["img_path"]))

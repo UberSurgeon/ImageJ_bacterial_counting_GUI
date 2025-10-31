@@ -2,9 +2,9 @@ import customtkinter as ctk
 import customtkinter as ctk
 import tkinter as tk
 class LogDropdown(ctk.CTkFrame):
-    def __init__(self, parent, get_logs_func,max_height=200):
+    def __init__(self, parent, logs, max_height=200):
         super().__init__(parent)
-        self.get_logs_func = get_logs_func
+        self.logs = logs
         self.expanded = False  # Is the dropdown open?
         self.max_height = max_height
 
@@ -18,7 +18,6 @@ class LogDropdown(ctk.CTkFrame):
         self.log_frame = ctk.CTkScrollableFrame(self,height=self.max_height,fg_color="white")
         self.log_frame.pack(fill="both", expand=True, padx=10, pady=5)
         self.log_frame.pack_forget()  # Hide initially
-
     def toggle(self):
         if self.expanded:
             self.log_frame.pack_forget()
@@ -30,7 +29,7 @@ class LogDropdown(ctk.CTkFrame):
                 widget.destroy()
 
             # Get new logs dynamically
-            raw_logs = self.get_logs_func()
+            raw_logs = self.logs
             if isinstance(raw_logs, str):
                 logs = raw_logs.splitlines()  # split string into lines
             else:

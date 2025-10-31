@@ -70,6 +70,7 @@ class Prelaunch(ctk.CTkToplevel):
         utils.log_message('info', 'in prolaunch')
         self.protocol("WM_DELETE_WINDOW", self._exit)
         self.configure(fg_color=APP_BG)
+        self.title("launcher")
 
         self.icon_path = ImageTk.PhotoImage(file=utils.imgPath('icon.ico'))
         self.wm_iconbitmap()
@@ -84,6 +85,9 @@ class Prelaunch(ctk.CTkToplevel):
         # elif self.setting['launch'] == 1:
         #     utils.log_message('info', f"not first time (launch is 1)")
         #     self._exit()
+        
+        self.output = self.capture_checkup_output()
+        # print(self.output)
          
         style = ttk.Style()
         style.theme_use("default")
@@ -143,10 +147,6 @@ class Prelaunch(ctk.CTkToplevel):
         self.olm = ctk.CTkLabel(self,font=roboto_label,text_color="#003366")
         self.olm.configure(text=f'Ollama status={ensure_ollama_ready()}')
 
-        # self.JHLb.pack()
-        # tk.Button(self, text='Change JAVA_HOME', command=self.update_JAVA_HOME).pack()
-        # self.FJLb.pack()
-        # tk.Button(self, text='Change fiji_dir', command=self.update_fijiDir).pack()
         self.torch.pack()
         self.olm.pack()
         
@@ -159,7 +159,7 @@ class Prelaunch(ctk.CTkToplevel):
         # text_box.insert(tk.END, self.capture_checkup_output())
         # text_box.config(state='disabled')
 
-        log_dropdown = LogDropdown(self,self.capture_checkup_output)
+        log_dropdown = LogDropdown(self, self.output)
         log_dropdown.pack(pady=20,fill="x")
 
         # Confirm launch section
