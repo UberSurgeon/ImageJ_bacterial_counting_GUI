@@ -53,15 +53,36 @@ Go to [https://ollama.ai](https://ollama.ai) and download the Windows installer.
 
 #### Step 3.2 — Install the Model
 
-Once Ollama is installed, open **PowerShell** and run:
+Once Ollama is installed
+
+1. Click the **Start** button in the bottom-left corner of your screen  
+   (the Windows logo made of four small white squares).
+
+2. Type **PowerShell** in the search bar.
+
+3. You should see an icon labeled **Windows PowerShell**
+
+4. **Right-click** on “Windows PowerShell” and choose  
+**Run as administrator.**
+
+5. Click inside the blue PowerShell window.
+
+6. Copy and paste the following command:
 
 ```
 ollama pull minicpm-v:latest
 ```
 
+7. Press **Enter** on your keyboard.
+
+This may take a few minutes depending on your internet speed. 
+
+
 #### Step 3.3 — Start Ollama
 
 Run Ollama as a background service:
+
+Copy and paste the following command:
 
 ```
 ollama run minicpm-v:latest
