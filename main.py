@@ -43,6 +43,10 @@ import sys
 import torch
 import stat
 from preprocess.minicpm_predict import ensure_ollama_ready
+import customtkinter as ctk
+from include.DirectoryCard import DirectoryCard
+from include.LogDropDown import LogDropdown
+from typing import Literal
 
 if getattr(sys, 'frozen', False):
     import pyi_splash
@@ -50,13 +54,26 @@ if getattr(sys, 'frozen', False):
 
 loader = LoadingWindow("ImageJ...", spinner=True)
 
-class Prelaunch(tk.Toplevel):
+APP_BG= "#f1f8ff"
+
+TEXT_COLOR = "#003366"
+
+ACCENT_COLOR = "#0066cc"
+TEXT_COLOR = "#ffffff"
+ROBOTO_BOLD = ("Roboto", 18, "bold")
+ROBOTO_LABEL = ("Roboto", 16)
+
+class Prelaunch(ctk.CTkToplevel):
     def __init__(self, master=None, on_confirm=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         utils.log_message('info', "Prelaunch window initialized")
-        
         utils.log_message('info', 'in prolaunch')
         self.protocol("WM_DELETE_WINDOW", self._exit)
+        self.configure(fg_color=APP_BG)
+
+        self.icon_path = ImageTk.PhotoImage(file=utils.imgPath('icon.ico'))
+        self.wm_iconbitmap()
+        self.after(250, lambda: self.iconphoto(False, self.icon_path))
 
         # Load configuration file
         with open(utils.settingPath(), 'r') as file:
@@ -67,24 +84,69 @@ class Prelaunch(tk.Toplevel):
         # elif self.setting['launch'] == 1:
         #     utils.log_message('info', f"not first time (launch is 1)")
         #     self._exit()
-            
+         
+        style = ttk.Style()
+        style.theme_use("default")
+
+        # Notebook container
+        style.configure("TNotebook",
+                        background=APP_BG,
+                        borderwidth=0,
+                        padding=10)
+
+        # Individual Tabs
+        style.configure("TNotebook.Tab",
+                        background=APP_BG,
+                        foreground=TEXT_COLOR,
+                        padding=[20, 10],
+                        borderwidth=0,
+                        font=("Segoe UI", 10, "bold"))
+
+        # Hover/selected states
+        style.map("TNotebook.Tab",
+                background=[("selected", ACCENT_COLOR),
+                            ("active", "#004c99")],
+                foreground=[("selected", TEXT_COLOR),
+                            ("active", TEXT_COLOR)])
+
+        # frame for the directory buttons
+
+        self.button_frame = ctk.CTkFrame(self,fg_color=APP_BG)
+        self.button_frame.pack(expand=True,fill="both",padx=20,pady=20)
+        self.button_frame.columnconfigure(0,weight=1)
+        self.button_frame.columnconfigure(1,weight=1)
+
+
+
+        # styles 
+
+        roboto_bold = ("Roboto",14,"bold")
+
+        roboto_label = ("Roboto", 10)
+
+        self.java_card = DirectoryCard(self.button_frame,"Current Java Directory",f'{self.setting["JAVA_HOME"]}',"Change",command=self.update_JAVA_HOME)
+        self.fiji_card = DirectoryCard(self.button_frame,"Current Fiji Directory",f'{self.setting["fiji_dir"]}',"Change",command=self.update_fijiDir)
+        self.java_card.grid(row=0,column=0,sticky="nsew",padx=10,pady=10)
+        self.fiji_card.grid(row=0,column=1,sticky="nsew",padx=10,pady=10)
 
         # Display current JAVA_HOME and Fiji directories
-        self.JHLb = tk.Label(self, text=f'JAVA_HOME={self.setting["JAVA_HOME"]}')
-        self.FJLb = tk.Label(self, text=f'fiji_dir={self.setting["fiji_dir"]}')
-        self.torch = tk.Label(self)
-        
-        if torch.cuda.is_available():
-            self.torch.config(text=f'GPU available, {torch.cuda.get_device_properties(0)}')
-        else:
-            self.torch.config(text=f'GPU NOT available')
-            
-        self.olm = tk.Label(self, text=f'Ollama status={ensure_ollama_ready()}')
+        #self.JHLb = tk.Label(self, text=f'JAVA_HOME={self.setting["JAVA_HOME"]}')
+        #self.FJLb = tk.Label(self, text=f'fiji_dir={self.setting["fiji_dir"]}')
+        #self.torch = tk.Label(self)
+        self.torch = ctk.CTkLabel(self,font=roboto_label,text_color="#003366")
 
-        self.JHLb.pack()
-        tk.Button(self, text='Change JAVA_HOME', command=self.update_JAVA_HOME).pack()
-        self.FJLb.pack()
-        tk.Button(self, text='Change fiji_dir', command=self.update_fijiDir).pack()
+        if torch.cuda.is_available():
+            self.torch.configure(text=f'GPU available, {torch.cuda.get_device_properties(0)}')
+        else:
+            self.torch.configure(text=f'GPU NOT available')
+
+        self.olm = ctk.CTkLabel(self,font=roboto_label,text_color="#003366")
+        self.olm.configure(text=f'Ollama status={ensure_ollama_ready()}')
+
+        # self.JHLb.pack()
+        # tk.Button(self, text='Change JAVA_HOME', command=self.update_JAVA_HOME).pack()
+        # self.FJLb.pack()
+        # tk.Button(self, text='Change fiji_dir', command=self.update_fijiDir).pack()
         self.torch.pack()
         self.olm.pack()
         
@@ -92,19 +154,25 @@ class Prelaunch(tk.Toplevel):
 
 
         # Run ImageJ environment check
-        text_box = tk.Text(self)
-        text_box.pack()
-        text_box.insert(tk.END, self.capture_checkup_output())
-        text_box.config(state='disabled')
+        # text_box = tk.Text(self)
+        # text_box.pack()
+        # text_box.insert(tk.END, self.capture_checkup_output())
+        # text_box.config(state='disabled')
+
+        log_dropdown = LogDropdown(self,self.capture_checkup_output)
+        log_dropdown.pack(pady=20,fill="x")
 
         # Confirm launch section
-        tk.Label(self, text="Proceed to main app?").pack(pady=10)
-        tk.Button(self, text="Yes", command=lambda: self._confirm(on_confirm)).pack(side="left", padx=30)
-        tk.Button(self, text="No", command=self._exit).pack(side="right", padx=30)
+        # tk.Label(self, text="Proceed to main app?").pack(pady=10)
+        # tk.Button(self, text="Yes", command=lambda: self._confirm(on_confirm)).pack(side="left", padx=30)
+        # tk.Button(self, text="No", command=self._exit).pack(side="right", padx=30)
         
         if getattr(sys, 'frozen', False):
             pyi_splash.close()
         
+
+        ctk.CTkButton(self, text="Proceed to main app", command=lambda: self._confirm(on_confirm), text_color="white",font=roboto_bold,corner_radius=12,height=40,width=180).pack(pady=20)
+
 
     def capture_checkup_output(self):
         # Perform ImageJ environment check and capture the output
@@ -157,10 +225,15 @@ class Prelaunch(tk.Toplevel):
 
 
 
-class Windows(tk.Toplevel):
+class Windows(ctk.CTkToplevel):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         utils.log_message('info', "Initializing main window")
+
+        self.icon_path = ImageTk.PhotoImage(file=utils.imgPath('icon.ico'))
+        self.wm_iconbitmap()
+        self.after(250, lambda: self.iconphoto(False, self.icon_path))
+
         try:
             # Load settings
             with open(utils.settingPath(), 'r') as file:
@@ -204,17 +277,33 @@ class Windows(tk.Toplevel):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        # Tabs setup
-        self.notebook = ttk.Notebook(self)
-        self.tab2 = Tab2(self.notebook, imageJ=self.imageJ, setting=self.setting, temp_dir=self.temp_dir)
-        self.tab1 = Tab1(self.notebook, save_Dir=self.save_Dir, temp_dir=self.temp_dir, windows=self)
-        self.tab4 = Tab4(self.notebook)
-        self.tab1_1 = Tab1_1(self.notebook, save_Dir=self.save_Dir, temp_dir=self.temp_dir, windows=self)
-        self.notebook.add(self.tab1, text="Upload Image")
-        self.notebook.add(self.tab1_1, text="rename")
-        self.notebook.add(self.tab2, text="Count")
-        self.notebook.add(self.tab4, text="Info/ Misc")
-        self.notebook.grid(row=0, column=0, sticky=tk.NSEW)
+
+        self.notebook = ctk.CTkTabview(self, fg_color=APP_BG,anchor="nw")
+        self.notebook.grid(row=0, column=0, sticky="nsew",padx=0,pady=0)
+
+        # Add tabs
+        self.notebook.add("Upload Image")
+        self.notebook.add("Rename")
+        self.notebook.add("Count")
+        self.notebook.add("Info / Misc")
+
+        # Apply consistent sizing
+        for tab_name in self.notebook.tab("Upload Image"), self.notebook.tab("Rename"), self.notebook.tab("Count"), self.notebook.tab("Info / Misc"):
+            tab_name.grid_columnconfigure(0, weight=1)
+            tab_name.grid_rowconfigure(0, weight=1)
+
+        # Embed existing tab classes inside the CTkTabview
+        self.tab1 = Tab1(self.notebook.tab("Upload Image"), save_Dir=self.save_Dir, temp_dir=self.temp_dir, windows=self)
+        self.tab1_1 = Tab1_1(self.notebook.tab("Rename"), save_Dir=self.save_Dir, temp_dir=self.temp_dir, windows=self)
+        self.tab2 = Tab2(self.notebook.tab("Count"), imageJ=self.imageJ, setting=self.setting, temp_dir=self.temp_dir)
+        self.tab4 = Tab4(self.notebook.tab("Info / Misc"))
+
+        # Place them inside each tab frame
+        self.tab1.pack(fill="both", expand=True)
+        self.tab1_1.pack(fill="both", expand=True)
+        self.tab2.pack(fill="both", expand=True)
+        self.tab4.pack(fill="both", expand=True)
+
         utils.log_message('info', "Main window UI initialized")
         loader.stop()
         self.lift()
@@ -314,7 +403,7 @@ class Windows(tk.Toplevel):
             self.wm_title(self.save_Dir)
             self.update_save()
             utils.log_message('info', f"Opened project from {self.save_Dir}")
-            self.change_tab(2)
+            self.change_tab('Count')
         # else:
         #     utils.infoMsg('Information', 'project already been open/ created')
         #     utils.log_message('warning', "Open attempted but project already open")
@@ -329,7 +418,7 @@ class Windows(tk.Toplevel):
             self.update_temp()
             self.update_img_dict_list([])
             utils.log_message('info', "new empty project")
-            self.change_tab(0)
+            self.change_tab('Upload Image')
 
     def update_save(self):
         self.tab1.update_save_Dir(self.save_Dir)
@@ -351,8 +440,15 @@ class Windows(tk.Toplevel):
         utils.log_message('debug', f"UPDATE_IMG_DICT_LIST CONTAIN >> {img_dict_list}")
         self.tab1_1.updateImage(img_dict_list)    
         
-    def change_tab(self, id):
-        self.notebook.select(id)
+    def change_tab(
+            self,
+            name: Literal[
+                'Upload Image',
+                'Rename',
+                'Count',
+                'Info / Misc'
+                ]):
+        self.notebook.set(name)  
 
 
 def main():
@@ -360,6 +456,7 @@ def main():
     root = tk.Tk()
     root.withdraw()
     utils.set_icon(root)
+    ctk.set_appearance_mode("light")
     utils.log_message('info', "Application started, Prelaunch window opened")
 
 

@@ -10,14 +10,20 @@ from preprocess.orientation import reOrientation
 import include.utils as utils
 from preprocess.preproces import preprocess
 from PIL.ExifTags import TAGS
+import customtkinter as ctk
+from include.Secondary_Button import SecondaryButton
 
 
+APP_BG= "#f1f8ff"
 
-class Tab1(tk.Frame):
+TEXT_COLOR = "#003366"
+
+
+class Tab1(ctk.CTkFrame):
     def __init__(self, parent, save_Dir, temp_dir, windows):
         super().__init__(parent)
-        ttk.Frame.__init__(self, master=parent)
-
+        ctk.CTkFrame.__init__(self, master=parent)
+        self.configure(fg_color=APP_BG)
         self.windows = windows
         self.temp_dir = temp_dir
         self.save_Dir = save_Dir
@@ -25,62 +31,84 @@ class Tab1(tk.Frame):
         self.img_list = []
         self.img_index = 0
 
-        # Configure layout
+        # Configure layout for vertical centering
+        self.rowconfigure(0, weight=5)  
+        self.rowconfigure(1, weight=1)  
+        self.rowconfigure(2, weight=1)  
+        self.rowconfigure(3, weight=0)  
+        self.rowconfigure(4, weight=0)  
+
+
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=1)
 
         # Canvas for image display
-        self.img_canvas = tk.Canvas(self, width=500, height=500)
+        self.img_canvas = tk.Canvas(self)
         self.init_text_id = self.img_canvas.create_text(
             100, 50,
             text="No Image Selected",
-            fill="black", font=('Helvetica 15 bold')
+            fill="black", font=('Roboto 15 bold')
         )
+        self.img_canvas.bind("<Configure>", self.center_placeholder)
         self.img_canvas.bind("<Button-1>", self.callback)
-        self.img_canvas.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW)
+        self.img_canvas.grid(row=0,column=0,columnspan=3, sticky="nsew")
 
         self.canvas_img_id = None
 
         # Buttons
-        button_back = tk.Button(self, text="<<", command=self.img_idx_back)
-        button_fwd = tk.Button(self, text=">>", command=self.img_idx_fwd)
-        button_upload = tk.Button(self, text="Upload", command=self.openFile)
-        button_del = tk.Button(self, text='remove image', command=self.delImage)
-        button_crop = tk.Button(self, text='crop image', command=self.cropImage)
-        button_rotate = tk.Button(self, text="Rotate >", command=self.rotate)
+        self.button_upload = ctk.CTkButton(self, text="Upload", command=self.openFile,height=40,font=("Roboto",16,"bold"))
+        self.button_upload.grid(row=2, column=1, sticky="ew")
 
-        button_back.grid(row=2, column=0, sticky=tk.NSEW)
-        button_upload.grid(row=2, column=1, sticky=tk.NSEW)
-        button_fwd.grid(row=2, column=2, sticky=tk.NSEW)
-        button_del.grid(row=3, column=1, sticky=tk.NSEW)
-        button_crop.grid(row=4, column=1, sticky=tk.NSEW)
-        button_rotate.grid(row=3, column=2, sticky=tk.NSEW)
+        self.button_back = SecondaryButton(self, "<<", self.img_idx_back)
+        self.button_fwd = SecondaryButton(self, ">>", self.img_idx_fwd)
+        self.button_del = SecondaryButton(self, "Remove image", self.delImage)
+        self.button_crop = SecondaryButton(self, "Crop image", self.cropImage)
+        self.button_rotate = SecondaryButton(self, "Rotate", self.rotate)
+
+
         
-        self.labeling = tk.IntVar(value=1)
-        labeling_toggle = tk.Checkbutton(
+        self.labeling = ctk.IntVar(value=1)
+        labeling_toggle = ctk.CTkCheckBox(
             self,
             text='predict labeling?',
             variable=self.labeling,
             onvalue=1,
-            offvalue=0
-            )
+            offvalue=0,
+            font=("Roboto",16)
+        )
+
+        labeling_toggle.grid(row=4, column=1, sticky="ew",pady=5)
+
+        self.keeptrack = ctk.CTkLabel(self, text='X/X')
+        self.keeptrack.grid(row=1, column=1, sticky="nsew")
         
-        labeling_toggle.grid(row=4, column=2, sticky=tk.NSEW)
-        
-        self.keeptrack = tk.Label(self, text='X/X')
-        self.keeptrack.grid(row=5, column=1, sticky=tk.NSEW)
-        
-        self.bind_all("<Left>", self.img_idx_back)
-        self.bind_all("<Right>", self.img_idx_fwd)
 
         utils.log_message('info', "Tab1 initialized successfully")
+    
+    def center_placeholder(self, event):
+        # Keep the 'No Image Selected' text centered
+        if self.init_text_id:
+            self.img_canvas.coords(self.init_text_id, event.width / 2, event.height / 2)
+            
+    def display_buttons(self):
+        for btn in [self.button_back, self.button_fwd, self.button_del, self.button_crop, self.button_rotate]:
+            btn.grid_forget()
 
+        
+        self.button_del.grid(row=3, column=0, sticky="ew",padx=5)
+        self.button_crop.grid(row=3, column=1, sticky="ew",padx=5)
+        self.button_rotate.grid(row=3, column=2, sticky="ew",padx=5)
+
+        if len(self.img_list) > 1:
+            self.button_back.grid(row=2, column=0, sticky="ew",padx=5)
+            self.button_fwd.grid(row=2, column=2, sticky="ew",padx=5)
+            
     def updateTrackingLabel(self):
         if self.img_list:
-            self.keeptrack.config(text=f"{self.img_index + 1}/{len(self.img_list)}")
+            self.keeptrack.configure(text=f"{self.img_index + 1}/{len(self.img_list)}")
         else:
-            self.keeptrack.config(text="X/X")
+            self.keeptrack.configure(text="X/X")
     
     def updateImage(self):
         """Refresh image list and display current image"""
@@ -135,6 +163,7 @@ class Tab1(tk.Frame):
             utils.log_message('debug', f"Loaded image list: {self.img_list}")
 
             self.displayImage()
+            self.display_buttons()
             utils.log_message('info', "Displayed uploaded images successfully")
 
         except Exception as e:
@@ -183,7 +212,7 @@ class Tab1(tk.Frame):
         try:
             result = preprocess(dst, out, self.labeling.get())
             self.windows.update_img_dict_list(result)
-            self.windows.change_tab(1)
+            self.windows.change_tab('Rename')
         except Exception as e:
             utils.errorMsg('cropImage', f'Failed to crop {dst}: {e}')
             utils.log_message('error', f"Failed to crop image {dst}: {e}")
@@ -197,33 +226,56 @@ class Tab1(tk.Frame):
             self.updateTrackingLabel()
             self.img_canvas.delete(self.canvas_img_id)
             self.canvas_img_id = None
+            if self.init_text_id:
+                self.img_canvas.delete(self.init_text_id)
+
             self.init_text_id = self.img_canvas.create_text(
-                100, 50, text="No Image Selected", fill="black", font=('Helvetica 15 bold')
+                self.img_canvas.winfo_width() / 2, 
+                self.img_canvas.winfo_height() / 2,
+                text="No Image Selected", fill="black", font=('Helvetica 15 bold')
             )
+            self.img_canvas.bind("<Configure>", self._center_image_on_resize)
+
             utils.log_message('debug', "No image selected — showing default text")
             return None
 
         try:
+            canvas_w = self.img_canvas.winfo_width() or 500
+            canvas_h = self.img_canvas.winfo_height() or 500
+            center_x, center_y = canvas_w / 2, canvas_h / 2
+            
             imgPath = self.img_list[self.img_index]
             self.img = Image.open(imgPath)
-            picsize = 500, 500
+            picsize = canvas_h, canvas_h
             size = self.img.size
             self.img = self.img.resize(utils.best_fit(size, picsize), Image.Resampling.LANCZOS)
             self.photoImg = ImageTk.PhotoImage(self.img)
 
+            
+
             if self.canvas_img_id is None:
                 self.img_canvas.delete(self.init_text_id)
                 self.canvas_img_id = self.img_canvas.create_image(
-                    250, 250, image=self.photoImg, anchor="center"
+                    center_x, center_y, image=self.photoImg, anchor="center"
                 )
             else:
                 self.img_canvas.itemconfig(self.canvas_img_id, image=self.photoImg)
+                self.img_canvas.coords(self.canvas_img_id, center_x, center_y)
+
+            self.img_canvas.bind("<Configure>", self._center_image_on_resize)
+
             self.updateTrackingLabel()
             utils.log_message('info', f"Displayed image: {imgPath}")
 
         except Exception as e:
             utils.errorMsg(title='displayImage', msg=f'error in displayImage {e}')
             utils.log_message('error', f"Error displaying image: {e}")
+    def _center_image_on_resize(self, event):
+        """Keep image centered when window resizes"""
+        if self.canvas_img_id:
+            self.img_canvas.coords(self.canvas_img_id, event.width / 2, event.height / 2)
+        elif self.init_text_id:
+            self.img_canvas.coords(self.init_text_id, event.width / 2, event.height / 2)
 
     def img_idx_fwd(self, event=None):
         """Go to next image in list"""

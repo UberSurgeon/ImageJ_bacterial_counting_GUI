@@ -3,18 +3,13 @@ import os
 from scyjava import jimport
 import json
 import jpype
-# import scyjava
-# scyjava.config.add_options('-Xmx6g')
 
-# ij = imagej.init("C:/Users/NotEW/Desktop/Fiji")
-# print(ij.getVersion())
-# print(ij.getApp().getInfo(True))
 
 class ImageJ():
     def __init__(self, dir, mode):
         self.ij = imagej.init(dir, mode)
         # print(self.ij.getVersion())
-        # print(self.ij.getApp().getInfo(True))
+
     
     def exit(self):
         print("Closing ImageJ...")
@@ -212,61 +207,9 @@ class ImageJ():
             self.ij.IJ.run("Close", "Results")
             print(results)
             return results
-        # self.ij.py.show(imp)
-        # ResultsTable = jimport('ij.measure.ResultsTable')
-        # OvalRoi = jimport('ij.gui.OvalRoi')
-        # ChannelSplitter = jimport('ij.plugin.ChannelSplitter')
-        # ep = 40
-        # red, green, imp = ChannelSplitter.split(imp)
-        # height = imp.getHeight()
-        # width = imp.getWidth()
-        # self.ij.IJ.run(imp, "Subtract Background...", "rolling=100 light")
-        # self.ij.IJ.run(imp, "Enhance Contrast...", "saturated=0.9 normalize")
-        # # imp.updateAndDraw()
-        # # ij.IJ.run(imp, "Apply LUT", "")
-        # self.ij.IJ.run(imp, "Median...", "radius=1")
-        # self.ij.IJ.run(imp, "Add...", "value=90")
-        # self.ij.ui().show(imp)
-        # roi = OvalRoi(ep/2, ep/2, (width-ep), (height-(ep+10)))
-        # imp.setRoi(roi)
-        # self.ij.IJ.setBackgroundColor(255, 255, 255)
-        # self.ij.IJ.run(imp, "Clear Outside", "")
-        # self.ij.IJ.run(imp, "Find Maxima...", "prominence=65 light output=Count")
-        # self.ij.IJ.run(imp, "Find Maxima...", "prominence=65 light output=[Point Selection]")
-        # imp = imp.flatten()
 
-        # self.ij.IJ.selectWindow('Results')
-        # rt = ResultsTable.getResultsTable()
-        # count = rt.size()
-
-        # results = []
-
-        # for i in range(count):
-        #     x = rt.getValue("Count", i)
-        #     result = {
-        #         'row': i + 1,
-        #         'count': int(x)
-        #     }
-        #     results.append(result)
-        # print(results)
 
 def main():
-    setting = ''
-    with open(r'C:\Users\NotEW\Documents\Code\roboai\gui\setting\setting.json', 'r') as file:
-        setting = json.load(file)
-            
-    # init imageJ
-    os.environ['JAVA_HOME'] = setting["JAVA_HOME"]
-    # self.imageJ = ImageJ("C:/Users/NotEW/Desktop/Fiji", mode='interactive')
-    imageJ = ImageJ(setting["fiji_dir"], mode='interactive')
-    # laskePesakeLuvut(self, img_list: list, setting: dict, imgDir: str, dataDir: str)
-    # os.environ['JAVA_HOME'] = r'C:\Program Files\Java\jdk-21'
-    # lol = ImageJ("C:/Users/NotEW/Desktop/Fiji", 'interactive')
-    img_list = [r'C:\Users\NotEW\Documents\Code\roboai\gui\bac.png']
-    # imageJ.test(img_list, setting, r'C:\Users\NotEW\Documents\Code\roboai\gui\waa', r'C:\Users\NotEW\Documents\Code\roboai\gui\waa')
-    
-    imageJ.laskePesakeLuvut(img_list, setting, r'C:\Users\NotEW\Documents\Code\roboai\gui\waa', r'C:\Users\NotEW\Documents\Code\roboai\gui\waa')
-    uIn = input()
-    imageJ.exit()
+    pass
 if __name__ == '__main__':
     main()

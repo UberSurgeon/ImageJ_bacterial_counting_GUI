@@ -2,18 +2,33 @@ import tkinter as tk
 from tkinterweb import HtmlFrame
 import markdown
 import include.utils as utils
+import customtkinter as ctk
+from include.DirectoryCard import DirectoryCard
 
 
-class Tab4(tk.Frame):
+APP_BG= "#f1f8ff"
+
+TEXT_COLOR = "#003366"
+
+
+
+class Tab4(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        # Button to open how-to-use guide
-        tk.Button(self, text='How to use', command=self.createWindowHelp).pack()
+        self.configure(fg_color=APP_BG)
 
-        # Button for contact/help
-        tk.Button(self, text='Contact',
-                  command=self.createWindowContact).pack()
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+
+
+        self.main_container = ctk.CTkFrame(self, fg_color=APP_BG)
+        self.main_container.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=20, pady=20)
+        self.main_container.columnconfigure(0, weight=1)
+        self.main_container.columnconfigure(1, weight=1)
+        DirectoryCard(self.main_container,"How to use", "Click the button to open the help guide.", "Guide" ,self.createWindowHelp).grid(row=0, column=0, pady=10,padx=10,sticky="nsew")
+        DirectoryCard(self.main_container,"Contact", "Click the button to open the contact/support window.", "Help", self.createWindowContact).grid(row=0, column=1, pady=10,padx=10,sticky="nsew")
 
         utils.log_message('info', "Tab4 initialized successfully")
 
