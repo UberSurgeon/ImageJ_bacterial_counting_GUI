@@ -22,3 +22,6 @@ class DirectoryCard(ctk.CTkFrame):
         self.button_element.pack(padx=20,pady=10)
 
 
+    def change_name(self, name):
+        self.directory_element.configure(text=name)
+

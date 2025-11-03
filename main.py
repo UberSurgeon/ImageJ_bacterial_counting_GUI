@@ -190,7 +190,7 @@ class Prelaunch(ctk.CTkToplevel):
         path = filedialog.askdirectory(title='Select the JAVA_HOME Directory')
         if path != '':
             self.setting["JAVA_HOME"] = path
-            self.JHLb.config(text=f'JAVA_HOME={self.setting["JAVA_HOME"]}')
+            self.java_card.change_name(name=f'JAVA_HOME={self.setting["JAVA_HOME"]}')
             self.update_setting()
             utils.log_message('info', f"Updated JAVA_HOME: {path}")
 
@@ -199,7 +199,7 @@ class Prelaunch(ctk.CTkToplevel):
         path = filedialog.askdirectory(title='Select the fiji installation Directory')
         if path != '':
             self.setting["fiji_dir"] = path
-            self.FJLb.config(text=f'fiji_dir={self.setting["fiji_dir"]}')
+            self.fiji_card.change_name(name=f'fiji_dir={self.setting["fiji_dir"]}')
             self.update_setting()
             utils.log_message('info', f"Updated Fiji directory: {path}")
 

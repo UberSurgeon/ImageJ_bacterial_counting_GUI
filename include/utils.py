@@ -90,6 +90,8 @@ def settingPath():
     else:
         # Running from source
         base_path = sys.path[0]
+        
+    log_message('debug', f'setting path = {os.path.join(base_path, "setting", "setting.json")}')
 
     return os.path.join(base_path, "setting", "setting.json")
     
