@@ -15,7 +15,10 @@ from include.Secondary_Button import SecondaryButton
 APP_BG= "#f1f8ff"
 
 TEXT_COLOR = "#003366"
+ACCENT_COLOR = "#8fc7ff"
 
+ROOBOTO_TEXT = ("Roboto", 14) 
+ROBOTO_BOLD = ("Roboto",14,"bold")
 class Tab2(ctk.CTkFrame):
     def __init__(self, parent, imageJ: ImageJ, setting, temp_dir):
         super().__init__(parent)
@@ -87,7 +90,7 @@ class Tab2(ctk.CTkFrame):
         ctk.CTkButton(self.left_frame,font=("Roboto",16,"bold") ,text="Count Colonies", command=self.askReCount,height=40,text_color="white").grid(
             row=4, column=0, padx=10, pady=10, sticky="ew"
         )
-        ctk.CTkButton(self.main_container, text="Settings", font=("Roboto",16),width=2, command=self.countSetting,fg_color=APP_BG,hover_color=APP_BG,text_color=TEXT_COLOR).grid(row=0, column=0, sticky="nw")
+        ctk.CTkButton(self.main_container, text="Settings", font=("Roboto",16),width=2, command=self.countSetting,fg_color=ACCENT_COLOR,hover_color=TEXT_COLOR,text_color="white").grid(row=0, column=0, sticky="nw")
 
         # Metadata text area
         self.text_box = ctk.CTkTextbox(self.right_frame,font=("Roboto", 16))
@@ -208,6 +211,7 @@ class Tab2(ctk.CTkFrame):
             if image_paths_to_count:
                 utils.log_message('info', "Starting counting process using ImageJ")
                 results = self.imageJ.laskePesakeLuvut(
+                    
                     img_list=image_paths_to_count,
                     setting=self.setting,
                     imgDir=imgDir,
@@ -460,8 +464,19 @@ class Tab2(ctk.CTkFrame):
 
     def countSetting(self):
         """Open configuration window for counting settings."""
-        new_window = tk.Toplevel()
-        new_window.geometry('200x250')
+        new_window = ctk.CTkToplevel(self)
+        new_window.title("Count settings")
+        #new_window.geometry('200x250')
+        new_window.configure(fg_color=APP_BG)
+        new_window.icon_path = ImageTk.PhotoImage(file=utils.imgPath('icon.ico'))
+        new_window.wm_iconbitmap()
+        new_window.after(250, lambda: new_window.iconphoto(False, new_window.icon_path))
+        new_window.transient(self.winfo_toplevel())
+        new_window.grab_set()                        
+        new_window.focus_force()                     
+        new_window.resizable(False, False)
+
+
         modes = list(self.setting['preset'].keys())
         utils.log_message('info', "Opened count settings window")
 
@@ -470,23 +485,31 @@ class Tab2(ctk.CTkFrame):
                 return
             return "break"
 
-        def show(event):
+        def show(event=None):
             result = opt.get()
             lbl.configure(text=result)
-            lbl_addlightness.configure(text=f"addlightness = {self.setting['preset'][result]['addlightness']}")
-            lbl_prominence.configure(text=f"prominence = {self.setting['preset'][result]['prominence']}")
+            lbl_addlightness.configure(text=f"Addlightness = {self.setting['preset'][result]['addlightness']}")
+            lbl_prominence.configure(text=f"Prominence = {self.setting['preset'][result]['prominence']}")
+
+            # Always hide first
+            in_light.pack_forget()
+            in_prom.pack_forget()
+            in_lightL.pack_forget()
+            in_promL.pack_forget()
+
+
             if result == 'custom':
                 in_lightL.pack()
-                in_light.pack()
+                in_light.pack(fill="x",expand=True,pady=(5,5))
                 in_promL.pack()
-                in_prom.pack()
+                in_prom.pack(fill="x",expand=True,pady=(5,5))
                 in_light.bind("<KeyPress>", on_key_press)
                 in_prom.bind("<KeyPress>", on_key_press)
-            else:
-                in_light.pack_forget()
-                in_prom.pack_forget()
-                in_lightL.pack_forget()
-                in_promL.pack_forget()
+            # else:
+            #     in_light.pack_forget()
+            #     in_prom.pack_forget()
+                #in_lightL.pack_forget()
+                #in_promL.pack_forget()
 
         def confirm():
             result = opt.get()
@@ -498,37 +521,42 @@ class Tab2(ctk.CTkFrame):
                 in_light.delete("1.0", "end")
                 in_prom.delete("1.0", "end")
             lbl.configure(text=result)
-            check.configure(text='saved*')
-            lbl_addlightness.configure(text=f"addlightness = {self.setting['preset'][result]['addlightness']}")
-            lbl_prominence.configure(text=f"prominence = {self.setting['preset'][result]['prominence']}")
+            check.configure(text='Saved*')
+            lbl_addlightness.configure(text=f"Addlightness = {self.setting['preset'][result]['addlightness']}")
+            lbl_prominence.configure(text=f"Prominence = {self.setting['preset'][result]['prominence']}")
             self.setting["env"] = result
             self.update_setting(self.setting)
             utils.log_message('info', f"Updated counting preset: {result}")
 
-        opt = tk.StringVar(value=self.setting["env"])
-        tk.Label(new_window, text='Select mode').pack()
-        tk.OptionMenu(new_window, opt, *modes, command=show).pack()
+        container = ctk.CTkFrame(new_window,fg_color=APP_BG)
+        container.pack(fill="both",expand=True,padx=20,pady=20)
 
-        lbl = tk.Label(new_window, text=" ")
-        lbl_addlightness = tk.Label(new_window, text=" ")
-        lbl_prominence = tk.Label(new_window, text=" ")
+
+        opt = ctk.StringVar(value=self.setting["env"])
+        ctk.CTkLabel(container, text='Select mode',font=ROOBOTO_TEXT).pack()
+        ctk.CTkOptionMenu(container, variable=opt, values=modes, command=show,font=ROOBOTO_TEXT).pack()
+
+        lbl = ctk.CTkLabel(container, text=" ",font=ROOBOTO_TEXT)
+        lbl_addlightness = ctk.CTkLabel(container, text=" ",font=ROOBOTO_TEXT)
+        lbl_prominence = ctk.CTkLabel(container, text=" ",font=ROOBOTO_TEXT)
         lbl.pack()
         lbl_addlightness.pack()
         lbl_prominence.pack()
 
-        in_lightL = tk.Label(new_window, text='Edit addlightness value')
-        in_light = tk.Text(new_window, height=1, width=3)
-        in_promL = tk.Label(new_window, text='Edit prominence value')
-        in_prom = tk.Text(new_window, height=1, width=3)
 
-        if self.setting["env"] == 'custom':
-            in_lightL.pack()
-            in_light.pack()
-            in_promL.pack()
-            in_prom.pack()
-            in_light.bind("<KeyPress>", on_key_press)
-            in_prom.bind("<KeyPress>", on_key_press)
+        in_lightL = ctk.CTkLabel(container, text='Edit addlightness value')
+        in_light = ctk.CTkTextbox(container, height=10, width=20,font=ROOBOTO_TEXT)
+        in_promL = ctk.CTkLabel(container, text='Edit prominence value')
+        in_prom = ctk.CTkTextbox(container,height=10, width=30,font=ROOBOTO_TEXT)
 
-        tk.Button(new_window, text='Confirm', command=confirm).pack()
-        check = tk.Label(new_window, text=" ")
+        # if self.setting["env"] == 'custom':
+        #     #in_lightL.pack(fill="x",expand=True)
+        #     in_light.pack(fill="x",expand=True)
+        #     #in_promL.pack(fill="x",expand=True)
+        #     in_prom.pack(fill="x",expand=True)
+        #     in_light.bind("<KeyPress>", on_key_press)
+        #     in_prom.bind("<KeyPress>", on_key_press)
+        show()
+        check = ctk.CTkLabel(container, text=" ",font=ROOBOTO_TEXT)
         check.pack()
+        ctk.CTkButton(container, text='Confirm', command=confirm,font=ROBOTO_BOLD).pack(pady=10,side="bottom",fill="x")

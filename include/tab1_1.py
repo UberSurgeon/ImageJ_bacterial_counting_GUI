@@ -37,11 +37,13 @@ class Tab1_1(ctk.CTkFrame):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=1)
-        self.rowconfigure(0, weight=5)
+        self.columnconfigure((0,1,2),weight=1,uniform="col")
+        self.rowconfigure(0, weight=4)
         self.rowconfigure(1, weight=4)
         self.rowconfigure(2, weight=0)
         self.rowconfigure(3, weight=0)
         self.rowconfigure(4, weight=0)
+        self.rowconfigure(5, weight=0)
 
 
         #canvas container
@@ -93,9 +95,9 @@ class Tab1_1(ctk.CTkFrame):
         button_fwd = SecondaryButton(self, ">>", command=self.img_idx_fwd)
         button_del = SecondaryButton(self, "Remove image", command=self.delImage)
 
-        button_back.grid(row=2, column=0, sticky="ew",padx=5,pady=5)
-        button_fwd.grid(row=2, column=2, sticky="ew",padx=5,pady=5)
-        button_del.grid(row=2, column=1, sticky="ew",padx=5,pady=5)
+        button_back.grid(row=3, column=0, sticky="ew",padx=5,pady=5)
+        button_fwd.grid(row=3, column=2, sticky="ew",padx=5,pady=5)
+        button_del.grid(row=3, column=1, sticky="ew",padx=5,pady=5)
 
 
         self.fileNameLabel = ctk.CTkLabel(self, text='no image select',font=("Roboto",18))
@@ -128,42 +130,51 @@ class Tab1_1(ctk.CTkFrame):
         self.confirm = ctk.CTkButton(self, text="Done", command=self.on_confirm,height=40,font=("Roboto",16,"bold"))
 
         #self.nameLabel.grid(row=3, column=0, sticky=tk.NSEW)
-        self.nameText.grid(row=3, column=1, sticky="ew",padx=10,pady=5)
-        self.fileNameLabel.grid(row=3, column=0, sticky="ew",padx=10,pady=5)
-        self.confirm.grid(row=4, column=1, sticky="ew",padx=10,pady=5)
-        self.confidenceLabel.grid(row=3, column=2, sticky="ew",pady=5,padx=10)
+        self.nameText.grid(row=4, column=1, sticky="ew",padx=10,pady=5)
+        self.fileNameLabel.grid(row=4, column=0, sticky="ew",padx=10,pady=5)
+        self.confirm.grid(row=5, column=1, sticky="ew",padx=10,pady=5)
+        self.confidenceLabel.grid(row=4, column=2, sticky="ew",pady=5,padx=10)
 
         # self.displayImage()
         self.keeptrack = ctk.CTkLabel(self, text='X/X',fg_color=APP_BG,font=("Roboto",16))
-        self.keeptrack.grid(row=1, column=1, sticky="ew",padx=5,pady=5)
+        self.keeptrack.grid(row=2, column=1, sticky="ew",padx=5,pady=5)
 
         utils.log_message('info', "Tab1_1 initialized successfully")
 
     def on_canvas_resize(self, event):
+        """
+        Always redraw images when the canvas changes size.
+        Ensures proper display even on very small screens.
+        """
         canvas = event.widget
-        width, height = event.width, event.height
+        width, height = max(event.width, 20), max(event.height, 20)
 
         # Resize main image
         if canvas == self.img_canvas and hasattr(self, 'img') and self.canvas_img_id:
-            resized_img = self.img.resize(utils.best_fit(self.img.size, (width, height)), Image.Resampling.LANCZOS)
-            self.photoImg = ImageTk.PhotoImage(resized_img)
-            self.img_canvas.itemconfig(self.canvas_img_id, image=self.photoImg)
-            self.img_canvas.coords(self.canvas_img_id, width // 2, height // 2)
+            resized = self.img.resize(utils.best_fit(self.img.size, (width, height)),
+                                    Image.Resampling.LANCZOS)
+            self.tk_img = ImageTk.PhotoImage(resized)
+            canvas.itemconfigure(self.canvas_img_id, image=self.tk_img)
+            canvas.coords(self.canvas_img_id, width // 2, height // 2)
 
-        # Resize label image (smaller than main image)
+        # Resize label image
         elif canvas == self.label_canvas and hasattr(self, 'label') and self.canvas_label_id:
-            label_w = int(width * 0.8)
-            label_h = int(height * 0.8)
-            resized_label = self.label.resize(utils.best_fit(self.label.size, (label_w, label_h)), Image.Resampling.LANCZOS)
-            self.photoLabel = ImageTk.PhotoImage(resized_label)
-            self.label_canvas.itemconfig(self.canvas_label_id, image=self.photoLabel)
-            self.label_canvas.coords(self.canvas_label_id, width // 2, height // 2)
+            lb_w = int(width * 0.9)
+            lb_h = int(height * 0.9)
+            resized = self.label.resize(utils.best_fit(self.label.size, (lb_w, lb_h)),
+                                        Image.Resampling.LANCZOS)
+            self.tk_label = ImageTk.PhotoImage(resized)
+            canvas.itemconfigure(self.canvas_label_id, image=self.tk_label)
+            canvas.coords(self.canvas_label_id, width // 2, height // 2)
 
-        # Center placeholder text if no image
-        elif canvas == self.img_canvas and not self.canvas_img_id:
-            canvas.coords(self.init_text_id, width // 2, height // 2)
-        elif canvas == self.label_canvas and not self.canvas_label_id:
-            canvas.coords(self.init_text_id2, width // 2, height // 2)
+        # Center placeholder text
+        else:
+            for id_text in [self.init_text_id, self.init_text_id2]:
+                try:
+                    canvas.coords(id_text, width // 2, height // 2)
+                except:
+                    pass
+
 
     def _resize_and_center(self, canvas, original_img, canvas_id, width, height, is_label=False):
         """Resize image proportionally to fit canvas and center it."""
@@ -335,78 +346,55 @@ class Tab1_1(ctk.CTkFrame):
     
 
     def displayImage(self):
-        """Display image on canvas"""
-
-        # If no images, show placeholder
+        """Always draw image, regardless of initial canvas size."""
+        
         if not self.img_dict_list:
             self.updateTrackingLabel()
             self.img_canvas.delete("all")
             self.label_canvas.delete("all")
             self.canvas_img_id = None
             self.canvas_label_id = None
-            self.init_text_id = self.img_canvas.create_text(
-                self.img_canvas.winfo_width() / 2,
-                self.img_canvas.winfo_height() / 2,
-                text="No image selected",
-                fill="Black",
-                font=("Roboto", 16, "bold")
-            )
-            self.init_text_id2 = self.label_canvas.create_text(
-                self.label_canvas.winfo_width() / 2,
-                self.label_canvas.winfo_height() / 2,
-                text="No image selected",
-                fill="Black",
-                font=("Roboto", 16, "bold")
-            )
+
+            w1, h1 = max(self.img_canvas.winfo_width(), 20), max(self.img_canvas.winfo_height(), 20)
+            w2, h2 = max(self.label_canvas.winfo_width(), 20), max(self.label_canvas.winfo_height(), 20)
+
+            self.init_text_id = self.img_canvas.create_text(w1 // 2, h1 // 2,
+                                                            text="No image selected",
+                                                            fill="Black",
+                                                            font=("Roboto", 16, "bold"))
+
+            self.init_text_id2 = self.label_canvas.create_text(w2 // 2, h2 // 2,
+                                                            text="No image selected",
+                                                            fill="Black",
+                                                            font=("Roboto", 16, "bold"))
             return
 
-        # Remove placeholder text before showing new image
-        self.img_canvas.delete("all")
-        self.label_canvas.delete("all")
-
-        # Get canvas sizes
-        canvas_width = self.img_canvas.winfo_width()
-        canvas_height = self.img_canvas.winfo_height()
-        label_width = self.label_canvas.winfo_width()
-        label_height = self.label_canvas.winfo_height()
-
-        # Retry if canvas sizes not ready
-        if (canvas_width < 100 or canvas_height < 100 or label_width < 100 or label_height < 100):
-            self.after(100, self.displayImage)
-            return
-
-        # Load images
         img_dict = self.img_dict_list[self.img_index]
+
+        #  Main image 
+        self.img_canvas.delete("all")
+        w, h = max(self.img_canvas.winfo_width(), 20), max(self.img_canvas.winfo_height(), 20)
+
         self.img = Image.open(img_dict["img_path"])
+        resized = self.img.resize(utils.best_fit(self.img.size, (w, h)), Image.Resampling.LANCZOS)
+        self.tk_img = ImageTk.PhotoImage(resized)
+        self.canvas_img_id = self.img_canvas.create_image(w // 2, h // 2, image=self.tk_img)
 
-        # Resize and convert to Tkinter image
-        self.img = self.img.resize(utils.best_fit(self.img.size, (canvas_width, canvas_height)), Image.Resampling.LANCZOS)
-        self.tk_img = ImageTk.PhotoImage(self.img)
-        self.canvas_img_id = self.img_canvas.create_image(
-            canvas_width / 2, canvas_height / 2, image=self.tk_img
-        )
+        #  Label image 
+        self.label_canvas.delete("all")
+        w2, h2 = max(self.label_canvas.winfo_width(), 20), max(self.label_canvas.winfo_height(), 20)
 
-        # Display label if available
-        try:
-            if "label_path" in img_dict:
-                if img_dict["label_path"] == "":
-                    self.label = Image.open(utils.imgPath('300px-Debugempty.png'))
-                else:
-                    self.label = Image.open(img_dict["label_path"])
-                self.label = self.label.resize(
-                    utils.best_fit(self.label.size, (max(int(label_width * 0.8), 1), max(int(label_height * 0.8), 1))),
-                    Image.Resampling.LANCZOS
-                )
-                self.tk_label = ImageTk.PhotoImage(self.label)
-                self.canvas_label_id = self.label_canvas.create_image(
-                    label_width / 2, label_height / 2, image=self.tk_label
-                )
-        except Exception as e:
-            print(f'width {int(label_width * 0.8)}')
-            print(f'height {int(label_height * 0.8)}')
-            print(f'exception  {e}')
+        if img_dict["label_path"]:
+            self.label = Image.open(img_dict["label_path"])
+        else:
+            self.label = Image.open(utils.imgPath('300px-Debugempty.png'))
 
-        # Update filename + tracking info
+        resized2 = self.label.resize(utils.best_fit(self.label.size, (int(w2*0.9), int(h2*0.9))),
+                                    Image.Resampling.LANCZOS)
+        self.tk_label = ImageTk.PhotoImage(resized2)
+        self.canvas_label_id = self.label_canvas.create_image(w2 // 2, h2 // 2, image=self.tk_label)
+
+        # Update labels
         self.fileNameLabel.configure(text=os.path.basename(img_dict["img_path"]))
         self.updateTrackingLabel()
 

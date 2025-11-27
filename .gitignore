@@ -15,7 +15,9 @@ preprocess/yolov7
 setting/setting.json
 test_img
 *.zip
-test.py
+test.py 
 traced_model.pt
 out/
 IJgui-0.01.zip
+.gui/
+Untitled_Project/
