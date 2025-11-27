@@ -127,7 +127,7 @@ class Prelaunch(ctk.CTkToplevel):
 
         roboto_bold = ("Roboto",14,"bold")
 
-        roboto_label = ("Roboto", 10)
+        roboto_label = ("Roboto", 16)
 
         self.java_card = DirectoryCard(self.button_frame,"Current Java Directory",f'{self.setting["JAVA_HOME"]}',"Change",command=self.update_JAVA_HOME)
         self.fiji_card = DirectoryCard(self.button_frame,"Current Fiji Directory",f'{self.setting["fiji_dir"]}',"Change",command=self.update_fijiDir)
@@ -141,18 +141,15 @@ class Prelaunch(ctk.CTkToplevel):
         self.torch = ctk.CTkLabel(self,font=roboto_label,text_color="#003366")
 
         if torch.cuda.is_available():
-            self.torch.configure(text=f'GPU available, {torch.cuda.get_device_properties(0)}')
+            self.torch.configure(text=f'GPU available ')#{torch.cuda.get_device_properties(0)}')
         else:
-            self.torch.configure(text=f'GPU NOT available')
+            self.torch.configure(text=f'GPU not available')
 
         self.olm = ctk.CTkLabel(self,font=roboto_label,text_color="#003366")
         self.olm.configure(text=f'Ollama status={ensure_ollama_ready()}')
 
         self.torch.pack()
         self.olm.pack()
-        
-        
-
 
         # Run ImageJ environment check
         # text_box = tk.Text(self)
@@ -190,7 +187,7 @@ class Prelaunch(ctk.CTkToplevel):
         path = filedialog.askdirectory(title='Select the JAVA_HOME Directory')
         if path != '':
             self.setting["JAVA_HOME"] = path
-            self.java_card.change_name(name=f'JAVA_HOME={self.setting["JAVA_HOME"]}')
+            self.java_card.change_name(name=f'{self.setting["JAVA_HOME"]}')
             self.update_setting()
             utils.log_message('info', f"Updated JAVA_HOME: {path}")
 
@@ -199,7 +196,7 @@ class Prelaunch(ctk.CTkToplevel):
         path = filedialog.askdirectory(title='Select the fiji installation Directory')
         if path != '':
             self.setting["fiji_dir"] = path
-            self.fiji_card.change_name(name=f'fiji_dir={self.setting["fiji_dir"]}')
+            self.fiji_card.change_name(name=f'{self.setting["fiji_dir"]}')
             self.update_setting()
             utils.log_message('info', f"Updated Fiji directory: {path}")
 

@@ -1,5 +1,5 @@
 {
-    "fiji_dir": "C:/Users/NotEW/Documents/Code/roboai/gui/Fiji",
+    "fiji_dir": "C:/Users/Akatemia/Desktop/gui/Fiji",
     "preset": {
         "test tube": {
             "addlightness": 90,
@@ -14,8 +14,8 @@
             "prominence": 90
         },
         "custom": {
-            "addlightness": "12",
-            "prominence": "98"
+            "addlightness": "10",
+            "prominence": "10"
         }
     },
     "env": "test tube",
